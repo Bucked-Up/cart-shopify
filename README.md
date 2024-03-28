@@ -34,6 +34,7 @@
   const urlParamsCookies = ["click_id", "utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content"];
 
   const hasQtty = false;
+  const country = "us";
 
   const productsID = [999,999];
   const orderBumpIds = { 999: { price: 4.99, discountCode: "test1" } };

@@ -4,6 +4,7 @@ const version_id = "";
 const urlParamsCookies = ["click_id", "utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content"];
 
 const hasQtty = false;
+const country = "ca"
 
 const productsID = ["8796403040562-whole",9123402547506,8796403138866,8796403204402,8858111377714];
 const orderBumpIds = { increase: { price: 9.99, discountCode: "test1", quantity: 2, title: "test", image: "https://cdn.shopify.com/s/files/1/0817/9941/4066/files/imgpsh_fullsize_anim_6.png?v=1696351807" } };
