@@ -17,7 +17,7 @@
     const cdnStyle = document.createElement("link");
     cdnStyle.rel = "stylesheet";
     const currentTime = Math.floor(+new Date() / (60 * 60 * 1000))
-    cdnStyle.href = `https://cdn.jsdelivr.net/gh/BuckedUp-DasLabs/cart-selection@3/src/scss/style.css?t=${currentTime}`
+    cdnStyle.href = `https://cdn.jsdelivr.net/gh/Bucked-Up/cart-shopify@1/src/scss/style.css?t=${currentTime}`
     document.head.appendChild(cdnStyle)
   }
   getCdnStyle();
@@ -54,7 +54,7 @@
     const cdnScript = document.createElement("script");
     cdnScript.type = "module";
     const currentTime = Math.floor(+new Date() / (60 * 60 * 1000))
-    cdnScript.src = `https://cdn.jsdelivr.net/gh/BuckedUp-DasLabs/cart-selection@3/src/js/scripts.js?t=${currentTime}`
+    cdnScript.src = `https://cdn.jsdelivr.net/gh/Bucked-Up/cart-shopify@1/src/js/scripts.js?t=${currentTime}`
     document.body.appendChild(cdnScript)
   }
   getCdnScript();
@@ -66,6 +66,7 @@ ex: "code1-code2"
 You can use a discount param on the url instead of the discountCode.
 
 You can have a increse orderBump that changes the qtty of the products in the card.
+
 ```
 const orderBumpIds = { increase: { price: 9.99, discountCode: "test1", quantity: 2, title: "test" } };
 ```
@@ -83,7 +84,7 @@ const productsID = ["999-877","999-877-858",""999-877-858-whole""];
 
 You can also add a oneCard property like that.
 
-You can add how much you want from the product depending on the button, the discountCode and the products you want from the specific button. Ex: 
+You can add how much you want from the product depending on the button, the discountCode and the products you want from the specific button. Ex:
 
 ```
 const buyButtonsIds = [
