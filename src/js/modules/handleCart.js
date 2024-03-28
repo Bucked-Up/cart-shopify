@@ -387,23 +387,27 @@ const createProduct = ({ prod, isVariant = false, isOrderBump = false, orderBump
       [qttyWrapper, qttyInput] = createQtty({ inputId: `qtty-${prod.id}`, maxQtty, addButton, price });
       addWrapper.appendChild(qttyWrapper);
     }
+    const getOrderBumpIncreaseProds = () => data.filter((prod) => !orderBumpIds["increase"].discart?.includes(+prod.id));
     addButton.addEventListener("click", () => {
       if (addButton.classList.contains("bump-added")) {
         addButton.classList.remove("bump-added");
         addButton.innerHTML = `Add to cart for only +$${price}`;
         orderBumpsContainer.appendChild(productWrapper);
         if (prod === "increase") {
-          document.getElementById("cart-qtty-input").remove();
+          document.querySelectorAll("[bump-increase-qtty-input]").forEach((input) => input.remove());
         } else {
           data.splice(data.indexOf(prod), 1);
         }
       } else {
         if (prod === "increase") {
-          const hiddenInput = document.createElement("input");
-          hiddenInput.type = "hidden";
-          hiddenInput.value = orderBumpIds[prod].quantity;
-          hiddenInput.id = "cart-qtty-input";
-          document.body.appendChild(hiddenInput);
+          getOrderBumpIncreaseProds().forEach((prod) => {
+            const hiddenInput = document.createElement("input");
+            hiddenInput.type = "hidden";
+            hiddenInput.setAttribute("bump-increase-qtty-input", "");
+            hiddenInput.value = orderBumpIds["increase"].quantity;
+            hiddenInput.id = `qtty-${prod.id}`;
+            document.body.appendChild(hiddenInput);
+          });
         } else {
           data.push(prod);
         }

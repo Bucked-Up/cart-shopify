@@ -69,7 +69,7 @@ You can use a discount param on the url instead of the discountCode.
 You can have a increse orderBump that changes the qtty of the products in the card.
 
 ```
-const orderBumpIds = { increase: { price: 9.99, discountCode: "test1", quantity: 2, title: "test" } };
+const orderBumpIds = { increase: { price: 9.99, discountCode: "test1", quantity: 2, title: "test", discart: [999,998], image: "https://" } };
 ```
 
 You can add a title property to a product in orderBumpIds.

@@ -167,7 +167,10 @@ const buy = async (data, btnDiscount) => {
       throw new Error("Api Error.");
     }
     const checkoutId = apiData.data.checkoutCreate.checkout.id;
-    const bumpDiscount = orderBumpIds["increase"]?.discountCode || orderBumpIds[data.find((prod) => prod.id.includes("ob"))?.id.split("ob")[0]]?.discountCode;
+    const hasBumpIncreaseDiscount = document.querySelector("[bump-increase-qtty-input]");
+    const bumpDiscount =
+      (hasBumpIncreaseDiscount && orderBumpIds["increase"]?.discountCode) ||
+      orderBumpIds[data.find((prod) => prod.id.includes("ob"))?.id.split("ob")[0]]?.discountCode;
     const urlDiscount = urlParams.get("discount");
     if (discountCode !== "" || btnDiscount || bumpDiscount || urlDiscount) {
       let discount;
