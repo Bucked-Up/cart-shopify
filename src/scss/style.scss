@@ -27,6 +27,13 @@
   }
 }
 
+.cart{
+  p,label{
+    margin:0
+  }
+  color:black;
+}
+
 .cart-wrapper {
   position: fixed;
   z-index: 999;
