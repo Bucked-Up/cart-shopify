@@ -467,6 +467,13 @@ const createCart = (data, orderBumpData) => {
 
   [cartOverlay, closeCartButton].forEach((el) => {
     el.addEventListener("click", () => {
+      for(let i=0;i<data.length;i++){
+        if (data[i].id.includes("ob")){
+          data.splice(i,1);
+          i--;
+        } 
+      }
+      document.querySelectorAll("[bump-increase-qtty-input]").forEach((input) => input.remove());
       cartWrapper.classList.toggle("active");
       document.body.classList.toggle("no-scroll");
     });
