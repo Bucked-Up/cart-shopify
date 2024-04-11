@@ -514,20 +514,21 @@ const createCart = (data, orderBumpData) => {
     orderBumpsContainer.innerHTML = "";
     buyButton = replaceElement(buyButton);
     data.forEach((prod) => {
+      const quantity = btnProducts ? btnProducts[prod.id]?.quantity : undefined
       if (prod.isWhole) {
         prod.variants.forEach((variant) => {
           inCartContainer.appendChild(
-            createProduct({ prod: variant, isVariant: { title: prod.title, id: prod.id }, quantity:btnProducts ? btnProducts[prod.id]?.quantity : undefined })
+            createProduct({ prod: variant, isVariant: { title: prod.title, id: prod.id }, quantity })
           );
         });
       } else {
-        const prodCard = createProduct({ prod, quantity: btnProducts ? btnProducts[prod.id]?.quantity : undefined });
+        const prodCard = createProduct({ prod, quantity });
         if (prodCard) inCartContainer.appendChild(prodCard);
       }
     });
     orderBumpData.forEach((prod) => {
       orderBumpsContainer.appendChild(
-        createProduct({ prod, quantity: btnProducts ? btnProducts[prod.id]?.quantity : undefined, isOrderBump: true, inCartContainer, orderBumpsContainer, data })
+        createProduct({ prod, isOrderBump: true, inCartContainer, orderBumpsContainer, data })
       );
     });
     buyButton.addEventListener("click", async () => {
