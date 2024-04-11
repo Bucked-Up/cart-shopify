@@ -5,10 +5,10 @@ const version_id = "";
 const hasQtty = true;
 const country = "us";
 
-const productsID = ["8820417003826-oneCard","9123402547506",8858111377714,"8685145588018-46753449607474-whole"];
-const orderBumpIds = {increase: {price: 9.99, title: "x2", quantity: 2}};
-const buyButtonsIds = [{id: "#BTN-1", products: '{"8858111377714": {"quantity": 2}, "8820417003826": {"quantity": 4}, "9123402547506": {"quantity": 2},"8685145588018": {"quantity": 3}}'}];
-const discountCode = "test2";
+const productsID = [9037941342514,9123402547506,8685143195954];
+const orderBumpIds = {8858113868082: {price: 4.95, discountCode: "KSUPGRADE"}};
+const buyButtonsIds = ["#BTN-1"]
+const discountCode = "kssrfb1";
 
 //stop here.
 const urlParams = new URLSearchParams(window.location.search);

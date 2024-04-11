@@ -517,17 +517,17 @@ const createCart = (data, orderBumpData) => {
       if (prod.isWhole) {
         prod.variants.forEach((variant) => {
           inCartContainer.appendChild(
-            createProduct({ prod: variant, isVariant: { title: prod.title, id: prod.id }, quantity: btnProducts[prod.id]?.quantity })
+            createProduct({ prod: variant, isVariant: { title: prod.title, id: prod.id }, quantity:btnProducts ? btnProducts[prod.id]?.quantity : undefined })
           );
         });
       } else {
-        const prodCard = createProduct({ prod, quantity: btnProducts[prod.id]?.quantity });
+        const prodCard = createProduct({ prod, quantity: btnProducts ? btnProducts[prod.id]?.quantity : undefined });
         if (prodCard) inCartContainer.appendChild(prodCard);
       }
     });
     orderBumpData.forEach((prod) => {
       orderBumpsContainer.appendChild(
-        createProduct({ prod, quantity: btnProducts[prod.id]?.quantity, isOrderBump: true, inCartContainer, orderBumpsContainer, data })
+        createProduct({ prod, quantity: btnProducts ? btnProducts[prod.id]?.quantity : undefined, isOrderBump: true, inCartContainer, orderBumpsContainer, data })
       );
     });
     buyButton.addEventListener("click", async () => {
