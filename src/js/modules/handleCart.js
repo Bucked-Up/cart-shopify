@@ -311,7 +311,7 @@ const createPlaceholders = ({ prod, selectionDiv }) => {
   return selectionDiv;
 };
 
-const createProduct = ({ prod, isVariant = false, isOrderBump = false, orderBumpsContainer = undefined, inCartContainer = undefined, data = undefined }) => {
+const createProduct = ({ prod, isVariant, isOrderBump, orderBumpsContainer, inCartContainer, data, quantity }) => {
   let prevProdWrapper;
   if (prod !== "increase") prevProdWrapper = document.querySelector(`[prod-id="${prod.id.split("id")[0]}"]`);
   let selectionDiv = undefined;
@@ -327,7 +327,7 @@ const createProduct = ({ prod, isVariant = false, isOrderBump = false, orderBump
 
   const productWrapper = document.createElement("div");
   productWrapper.classList.add("cart__product");
-  if (prod !== "increase") productWrapper.setAttribute("prod-id", prod.id.split("id")[0]);
+  if (prod !== "increase") productWrapper.setAttribute("prod-id", isVariant ? isVariant.id : prod.id.split("id")[0]);
 
   const productContainer = document.createElement("div");
   productContainer.classList.add("cart__product__container");
@@ -340,7 +340,7 @@ const createProduct = ({ prod, isVariant = false, isOrderBump = false, orderBump
 
   const title = document.createElement("p");
   title.classList.add("cart__product__title");
-  title.innerHTML = isVariant || prod.title || orderBumpIds[prod].title;
+  title.innerHTML = isVariant?.title || prod.title || orderBumpIds[prod].title;
   productInfo.appendChild(title);
   if (isVariant) {
     const variantTitle = document.createElement("p");
@@ -351,6 +351,8 @@ const createProduct = ({ prod, isVariant = false, isOrderBump = false, orderBump
 
   let img = undefined;
   if (!prod.oneCard) {
+    const imgWrapper = document.createElement("div");
+    imgWrapper.classList.add("cart__product__img-wrapper");
     img = document.createElement("img");
     if (isVariant) {
       img.src = prod.image.src;
@@ -363,7 +365,14 @@ const createProduct = ({ prod, isVariant = false, isOrderBump = false, orderBump
         img.src = orderBumpIds[prod].image;
       }
     }
-    productContainer.appendChild(img);
+    imgWrapper.appendChild(img);
+    productContainer.appendChild(imgWrapper);
+    if (quantity > 1 && (isVariant || prod.variants?.length <= 1)) {
+      const quantityLabel = document.createElement("span");
+      quantityLabel.id = `${isVariant?.id || prod.id}-quantity`;
+      quantityLabel.innerHTML = quantity || 1;
+      imgWrapper.appendChild(quantityLabel);
+    }
   }
 
   productContainer.appendChild(productInfo);
@@ -384,7 +393,7 @@ const createProduct = ({ prod, isVariant = false, isOrderBump = false, orderBump
     let qttyWrapper, qttyInput;
     if (prod.hasQtty) {
       const maxQtty = typeof prod.hasQtty === "number" ? prod.hasQtty : false;
-      [qttyWrapper, qttyInput] = createQtty({ inputId: `qtty-${prod.id}`, maxQtty, addButton, price });
+      [qttyWrapper, qttyInput] = createQtty({ inputId: `qtty-input-${prod.id}`, maxQtty, addButton, price });
       addWrapper.appendChild(qttyWrapper);
     }
     const getOrderBumpIncreaseProds = () => data.filter((prod) => !orderBumpIds["increase"].discart?.includes(+prod.id));
@@ -405,7 +414,7 @@ const createProduct = ({ prod, isVariant = false, isOrderBump = false, orderBump
             hiddenInput.type = "hidden";
             hiddenInput.setAttribute("bump-increase-qtty-input", "");
             hiddenInput.value = orderBumpIds["increase"].quantity;
-            hiddenInput.id = `qtty-${prod.id}`;
+            hiddenInput.id = `qtty-input-${prod.id}`;
             document.body.appendChild(hiddenInput);
           });
         } else {
@@ -467,11 +476,11 @@ const createCart = (data, orderBumpData) => {
 
   [cartOverlay, closeCartButton].forEach((el) => {
     el.addEventListener("click", () => {
-      for(let i=0;i<data.length;i++){
-        if (data[i].id.includes("ob")){
-          data.splice(i,1);
+      for (let i = 0; i < data.length; i++) {
+        if (data[i].id.includes("ob")) {
+          data.splice(i, 1);
           i--;
-        } 
+        }
       }
       document.querySelectorAll("[bump-increase-qtty-input]").forEach((input) => input.remove());
       cartWrapper.classList.toggle("active");
@@ -500,22 +509,26 @@ const createCart = (data, orderBumpData) => {
     return elClone;
   };
 
-  const updateCartProducts = (data, btnDiscount) => {
+  const updateCartProducts = (data, btnDiscount, btnProducts) => {
     inCartContainer.innerHTML = "";
     orderBumpsContainer.innerHTML = "";
     buyButton = replaceElement(buyButton);
     data.forEach((prod) => {
       if (prod.isWhole) {
         prod.variants.forEach((variant) => {
-          inCartContainer.appendChild(createProduct({ prod: variant, isVariant: prod.title }));
+          inCartContainer.appendChild(
+            createProduct({ prod: variant, isVariant: { title: prod.title, id: prod.id }, quantity: btnProducts[prod.id]?.quantity })
+          );
         });
       } else {
-        const prodCard = createProduct({ prod });
+        const prodCard = createProduct({ prod, quantity: btnProducts[prod.id]?.quantity });
         if (prodCard) inCartContainer.appendChild(prodCard);
       }
     });
     orderBumpData.forEach((prod) => {
-      orderBumpsContainer.appendChild(createProduct({ prod, isOrderBump: true, inCartContainer, orderBumpsContainer, data }));
+      orderBumpsContainer.appendChild(
+        createProduct({ prod, quantity: btnProducts[prod.id]?.quantity, isOrderBump: true, inCartContainer, orderBumpsContainer, data })
+      );
     });
     buyButton.addEventListener("click", async () => {
       buyButton.toggleAttribute("disabled");

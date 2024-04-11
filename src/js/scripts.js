@@ -35,7 +35,7 @@ const main = async () => {
         filteredData.forEach((prod) => {
           increasedData.push(prod);
           const quantity = btnProducts[prod.id].quantity;
-          if (quantity > 1) {
+          if (quantity > 1 && !prod.isWhole && prod.variants?.length > 1) {
             for (let i = 1; i < quantity; i++) {
               const copy = { ...prod, id: `${prod.id}id${i}` };
               increasedData.push(copy);
@@ -45,7 +45,7 @@ const main = async () => {
         btnData = increasedData;
       } else btnData = data;
       if (!btn.hasAttribute("disabled")) {
-        updateCartProducts(btnData, btn.getAttribute("discountCode"));
+        updateCartProducts(btnData, btn.getAttribute("discountCode"), btnProducts);
       }
     });
   });

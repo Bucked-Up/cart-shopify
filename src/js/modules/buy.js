@@ -111,11 +111,13 @@ const startPopsixle = (id) => {
 const buy = async (data, btnDiscount) => {
   const variantId = [];
   for (let product of data) {
-    const quantity = +document.getElementById(`qtty-${product.id}`)?.value;
+    const inputQtty = +document.getElementById(`qtty-input-${product.id}`)?.value || 1
+    const prodQtty = +document.getElementById(`${product.id}-quantity`)?.innerHTML || 1
+    const quantity = inputQtty * prodQtty;
     if (product.isWhole) {
       variantId.push(
         ...product.variants.map((variant) => {
-          return { id: variant.id };
+          return { id: variant.id, quantity };
         })
       );
     } else if (product.variants.length > 1) {
@@ -131,10 +133,10 @@ const buy = async (data, btnDiscount) => {
 
   toggleLoading();
 
-  const quantity = +document.getElementById("cart-qtty-input")?.value || 1;
+  const globalQuantity = +document.getElementById("cart-qtty-input")?.value || 1;
 
   const obj = variantId.map((variant) => {
-    return { variantId: variant.id, quantity: variant.quantity || quantity };
+    return { variantId: variant.id, quantity: globalQuantity * variant.quantity };
   });
   const input = {
     input: {
