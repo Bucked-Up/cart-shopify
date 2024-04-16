@@ -87,7 +87,23 @@ You can add a title property to a product in orderBumpIds.
 
 You can add a inTop property to a product in orderBumpIds.
 
-You can add a hasQtty property to a product in orderBumpIds, and its value can he true false or any number.
+You can add a hasQtty property to a product in orderBumpIds, and its value can be true false or any number.
+
+You can add a multiBump like so:
+
+```
+const orderBumpIds = {
+  multiBump: {
+    products: {
+      8685147062578: { title: "First, choose your Perfect Shaker Bottle" },
+      8685145588018: { title: "Now, Choose your Pre-Workout Formula" },
+      8858113868082: {},
+    },
+    price: 4.95,
+    discountCode: "KSUPGRADE",
+  },
+};
+```
 
 You can specify the variants you want from a product (or variant) by typing "id-variantId", and if every variant should go to the checkout using "whole"
 ex:

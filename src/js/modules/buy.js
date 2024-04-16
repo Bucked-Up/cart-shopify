@@ -172,7 +172,8 @@ const buy = async (data, btnDiscount) => {
     const hasBumpIncreaseDiscount = document.querySelector("[bump-increase-qtty-input]");
     const bumpDiscount =
       (hasBumpIncreaseDiscount && orderBumpIds["increase"]?.discountCode) ||
-      orderBumpIds[data.find((prod) => prod.id.includes("ob"))?.id.split("ob")[0]]?.discountCode;
+      orderBumpIds[data.find((prod) => prod.id.includes("ob"))?.id.split("ob")[0]]?.discountCode ||
+      data.find((prod) => prod.id.includes("ob")) && orderBumpIds.multiBump.discountCode
     const urlDiscount = urlParams.get("discount");
     if (discountCode !== "" || btnDiscount || bumpDiscount || urlDiscount) {
       let discount;

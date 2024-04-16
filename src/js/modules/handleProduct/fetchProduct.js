@@ -20,8 +20,13 @@ const filterVariants = (data, ids, isOrderBump) => {
   const isAvailable = (variant) => variant.node.availableForSale === true;
 
   const addCustomTitle = (id) => {
-    if ("title" in orderBumpIds[id]) {
-      data.find((prod) => prod.id.includes(id)).title = orderBumpIds[id].title;
+    const isMulti = "multiBump" in orderBumpIds
+    if (isMulti && "title" in orderBumpIds.multiBump.products[id]) {
+      data.find((prod) => prod.id.includes(id)).title = orderBumpIds.multiBump.products[id].title;
+      return;
+    }
+    if (!isMulti && "title" in orderBumpIds[id]) {
+      data.find((prod) => prod.id.includes(id)).title = orderBumpIds[id]?.title
     }
   };
 
@@ -51,7 +56,7 @@ const filterVariants = (data, ids, isOrderBump) => {
 };
 
 const fetchProduct = async ({ ids, isOrderBump = false }) => {
-  if(isOrderBump && "increase" in orderBumpIds) return ["increase"]
+  if (isOrderBump && "increase" in orderBumpIds) return ["increase"];
   const query = `
   { 
     nodes(ids: [${ids.map((id) => `"gid://shopify/Product/${id}"`)}]) {

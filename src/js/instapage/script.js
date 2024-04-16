@@ -6,7 +6,17 @@ const hasQtty = true;
 const country = "us";
 
 const productsID = [9037941342514,9123402547506,8685143195954];
-const orderBumpIds = {8858113868082: {price: 4.95, discountCode: "KSUPGRADE"}};
+const orderBumpIds = {
+  multiBump: {
+    products: {
+      8685147062578: { title: "First, choose your Perfect Shaker Bottle" },
+      8685145588018: { title: "Now, Choose your Pre-Workout Formula" },
+      8858113868082: {},
+    },
+    price: 4.95,
+    discountCode: "KSUPGRADE",
+  },
+};
 const buyButtonsIds = ["#BTN-1"]
 const discountCode = "kssrfb1";
 

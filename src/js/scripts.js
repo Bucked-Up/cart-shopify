@@ -16,7 +16,7 @@ buyButtonsIds.forEach((id) => {
 
 const main = async () => {
   toggleLoading();
-  const [data, orderBumpData] = await Promise.all([fetchProduct({ ids: productsID }), fetchProduct({ ids: Object.keys(orderBumpIds), isOrderBump: true })]);
+  const [data, orderBumpData] = await Promise.all([fetchProduct({ ids: productsID }), fetchProduct({ ids: "multiBump" in orderBumpIds ? Object.keys(orderBumpIds.multiBump.products) : Object.keys(orderBumpIds), isOrderBump: true })]);
   dataLayerStart(data);
   const noStock = (el) => !el.availableForSale;
   if (data.some(noStock)) {

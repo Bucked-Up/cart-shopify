@@ -311,6 +311,47 @@ const createPlaceholders = ({ prod, selectionDiv }) => {
   return selectionDiv;
 };
 
+const createBumpAddButton = ({ data, container, wrapper, inCartContainer, prod }) => {
+  const isIncrease = typeof prod === "string" && prod === "increase";
+  const isMulti = "multiBump" in orderBumpIds;
+  const addButton = document.createElement("button");
+  addButton.classList.add("add-button");
+  const price = orderBumpIds[prod]?.price || orderBumpIds[prod?.id?.split("ob")[0]]?.price || orderBumpIds.multiBump.price;
+  addButton.innerHTML = `Add to cart for only +$${price}`;
+  const getOrderBumpIncreaseProds = () => data.filter((prod) => !orderBumpIds["increase"].discart?.includes(+prod.id));
+  addButton.addEventListener("click", () => {
+    if (addButton.classList.contains("bump-added")) {
+      addButton.classList.remove("bump-added");
+      addButton.innerHTML = `Add to cart for only +$${price}`;
+      container.appendChild(wrapper);
+      if (isIncrease) {
+        document.querySelectorAll("[bump-increase-qtty-input]").forEach((input) => input.remove());
+      } else {
+        if (isMulti) prod.forEach((prod) => data.splice(data.indexOf(prod), 1));
+        else data.splice(data.indexOf(prod), 1);
+      }
+    } else {
+      if (isIncrease) {
+        getOrderBumpIncreaseProds().forEach((prod) => {
+          const hiddenInput = document.createElement("input");
+          hiddenInput.type = "hidden";
+          hiddenInput.setAttribute("bump-increase-qtty-input", "");
+          hiddenInput.value = orderBumpIds["increase"].quantity;
+          hiddenInput.id = `qtty-input-${prod.id}`;
+          document.body.appendChild(hiddenInput);
+        });
+      } else {
+        if (isMulti) prod.forEach((prod) => data.push(prod));
+        else data.push(prod);
+      }
+      addButton.classList.add("bump-added");
+      addButton.innerHTML = "Added to card";
+      inCartContainer.appendChild(wrapper);
+    }
+  });
+  return addButton;
+};
+
 const createProduct = ({ prod, isVariant, isOrderBump, orderBumpsContainer, inCartContainer, data, quantity }) => {
   let prevProdWrapper;
   if (prod !== "increase") prevProdWrapper = document.querySelector(`[prod-id="${prod.id.split("id")[0]}"]`);
@@ -382,13 +423,10 @@ const createProduct = ({ prod, isVariant, isOrderBump, orderBumpsContainer, inCa
     else handleOneCardProduct({ prod, productInfo });
   }
 
-  if (isOrderBump) {
+  if (isOrderBump && !("multiBump" in orderBumpIds)) {
     const addWrapper = document.createElement("div");
     addWrapper.classList.add("add-wrapper");
-    const addButton = document.createElement("button");
-    addButton.classList.add("add-button");
-    const price = orderBumpIds[prod]?.price || orderBumpIds[prod.id.split("ob")[0]].price;
-    addButton.innerHTML = `Add to cart for only +$${price}`;
+    const addButton = createBumpAddButton({ data, container: orderBumpsContainer, wrapper: productWrapper, inCartContainer, prod });
     addWrapper.appendChild(addButton);
     let qttyWrapper, qttyInput;
     if (prod.hasQtty) {
@@ -396,35 +434,6 @@ const createProduct = ({ prod, isVariant, isOrderBump, orderBumpsContainer, inCa
       [qttyWrapper, qttyInput] = createQtty({ inputId: `qtty-input-${prod.id}`, maxQtty, addButton, price });
       addWrapper.appendChild(qttyWrapper);
     }
-    const getOrderBumpIncreaseProds = () => data.filter((prod) => !orderBumpIds["increase"].discart?.includes(+prod.id));
-    addButton.addEventListener("click", () => {
-      if (addButton.classList.contains("bump-added")) {
-        addButton.classList.remove("bump-added");
-        addButton.innerHTML = `Add to cart for only +$${price}`;
-        orderBumpsContainer.appendChild(productWrapper);
-        if (prod === "increase") {
-          document.querySelectorAll("[bump-increase-qtty-input]").forEach((input) => input.remove());
-        } else {
-          data.splice(data.indexOf(prod), 1);
-        }
-      } else {
-        if (prod === "increase") {
-          getOrderBumpIncreaseProds().forEach((prod) => {
-            const hiddenInput = document.createElement("input");
-            hiddenInput.type = "hidden";
-            hiddenInput.setAttribute("bump-increase-qtty-input", "");
-            hiddenInput.value = orderBumpIds["increase"].quantity;
-            hiddenInput.id = `qtty-input-${prod.id}`;
-            document.body.appendChild(hiddenInput);
-          });
-        } else {
-          data.push(prod);
-        }
-        addButton.classList.add("bump-added");
-        addButton.innerHTML = "Added to card";
-        inCartContainer.appendChild(productWrapper);
-      }
-    });
     productInfo.appendChild(addWrapper);
   }
 
@@ -509,28 +518,40 @@ const createCart = (data, orderBumpData) => {
     return elClone;
   };
 
+  const createMultiBumpWrapper = ({ data, container, inCartContainer, prod }) => {
+    const multiBumpWrapper = document.createElement("div");
+    multiBumpWrapper.classList.add("cart__order-bumps-container__multi-bump-wrapper");
+    const button = createBumpAddButton({ data, container, wrapper: multiBumpWrapper, inCartContainer, prod });
+    return [multiBumpWrapper, button];
+  };
+
   const updateCartProducts = (data, btnDiscount, btnProducts) => {
     inCartContainer.innerHTML = "";
     orderBumpsContainer.innerHTML = "";
     buyButton = replaceElement(buyButton);
     data.forEach((prod) => {
-      const quantity = btnProducts ? btnProducts[prod.id]?.quantity : undefined
+      const quantity = btnProducts ? btnProducts[prod.id]?.quantity : undefined;
       if (prod.isWhole) {
         prod.variants.forEach((variant) => {
-          inCartContainer.appendChild(
-            createProduct({ prod: variant, isVariant: { title: prod.title, id: prod.id }, quantity })
-          );
+          inCartContainer.appendChild(createProduct({ prod: variant, isVariant: { title: prod.title, id: prod.id }, quantity }));
         });
       } else {
         const prodCard = createProduct({ prod, quantity });
         if (prodCard) inCartContainer.appendChild(prodCard);
       }
     });
-    orderBumpData.forEach((prod) => {
-      orderBumpsContainer.appendChild(
-        createProduct({ prod, isOrderBump: true, inCartContainer, orderBumpsContainer, data })
-      );
-    });
+    if ("multiBump" in orderBumpIds) {
+      const [multiBumpWrapper, bumpButton] = createMultiBumpWrapper({ data, container: orderBumpsContainer, inCartContainer, prod: orderBumpData });
+      orderBumpsContainer.appendChild(multiBumpWrapper);
+      orderBumpData.forEach((prod) => {
+        multiBumpWrapper.appendChild(createProduct({ prod, isOrderBump: true, inCartContainer, orderBumpsContainer: multiBumpWrapper, data }));
+      });
+      multiBumpWrapper.appendChild(bumpButton)
+    } else
+      orderBumpData.forEach((prod) => {
+        orderBumpsContainer.appendChild(createProduct({ prod, isOrderBump: true, inCartContainer, orderBumpsContainer, data }));
+      });
+
     buyButton.addEventListener("click", async () => {
       buyButton.toggleAttribute("disabled");
       const result = await buy(data, btnDiscount);
