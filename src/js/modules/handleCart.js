@@ -204,7 +204,7 @@ const handleComplexProduct = ({ prod, productInfo, img }) => {
   productInfo.appendChild(secondaryVariantsWrapper);
 };
 
-const createQtty = ({ inputId = undefined, maxQtty = undefined, addButton = undefined, price = undefined }) => {
+const createQtty = ({ inputId, maxQtty, addButton, price }) => {
   const updateTitle = (qtty) => {
     if (price) {
       const separetedString = addButton.innerHTML.split("$");
@@ -311,14 +311,13 @@ const createPlaceholders = ({ prod, selectionDiv }) => {
   return selectionDiv;
 };
 
-const createBumpAddButton = ({ data, container, wrapper, inCartContainer, prod }) => {
+const createBumpAddButton = ({data, container, wrapper, inCartContainer, prod, price, lpParams }) => {
+  const isMulti = prod.length > 1;
   const isIncrease = typeof prod === "string" && prod === "increase";
-  const isMulti = "multiBump" in orderBumpIds;
   const addButton = document.createElement("button");
   addButton.classList.add("add-button");
-  const price = orderBumpIds[prod]?.price || orderBumpIds[prod?.id?.split("ob")[0]]?.price || orderBumpIds.multiBump.price;
   addButton.innerHTML = `Add to cart for only +$${price}`;
-  const getOrderBumpIncreaseProds = () => data.filter((prod) => !orderBumpIds["increase"].discart?.includes(+prod.id));
+  const getOrderBumpIncreaseProds = () => data.filter((prod) => !lpParams.bump.products["increase"].discart?.includes(+prod.id));
   addButton.addEventListener("click", () => {
     if (addButton.classList.contains("bump-added")) {
       addButton.classList.remove("bump-added");
@@ -336,7 +335,7 @@ const createBumpAddButton = ({ data, container, wrapper, inCartContainer, prod }
           const hiddenInput = document.createElement("input");
           hiddenInput.type = "hidden";
           hiddenInput.setAttribute("bump-increase-qtty-input", "");
-          hiddenInput.value = orderBumpIds["increase"].quantity;
+          hiddenInput.value = lpParams.bump.products["increase"].quantity;
           hiddenInput.id = `qtty-input-${prod.id}`;
           document.body.appendChild(hiddenInput);
         });
@@ -352,7 +351,7 @@ const createBumpAddButton = ({ data, container, wrapper, inCartContainer, prod }
   return addButton;
 };
 
-const createProduct = ({ prod, isVariant, isOrderBump, orderBumpsContainer, inCartContainer, data, quantity }) => {
+const createProduct = ({ prod, isVariant, isOrderBump, orderBumpsContainer, inCartContainer, quantity, lpParams, data }) => {
   let prevProdWrapper;
   if (prod !== "increase") prevProdWrapper = document.querySelector(`[prod-id="${prod.id.split("id")[0]}"]`);
   let selectionDiv = undefined;
@@ -381,7 +380,7 @@ const createProduct = ({ prod, isVariant, isOrderBump, orderBumpsContainer, inCa
 
   const title = document.createElement("p");
   title.classList.add("cart__product__title");
-  title.innerHTML = isVariant?.title || prod.title || orderBumpIds[prod].title;
+  title.innerHTML = isVariant?.title || prod.title || lpParams.bump.products[prod].title;
   productInfo.appendChild(title);
   if (isVariant) {
     const variantTitle = document.createElement("p");
@@ -403,7 +402,7 @@ const createProduct = ({ prod, isVariant, isOrderBump, orderBumpsContainer, inCa
         img.src = prod.variants[0].image.src;
         img.alt = prod.variants[0].title;
       } else {
-        img.src = orderBumpIds[prod].image;
+        img.src = lpParams.bump.products[prod].image;
       }
     }
     imgWrapper.appendChild(img);
@@ -422,16 +421,16 @@ const createProduct = ({ prod, isVariant, isOrderBump, orderBumpsContainer, inCa
     else if (!prod.oneCard) handleSimpleProduct({ prod, productInfo, img });
     else handleOneCardProduct({ prod, productInfo });
   }
-
-  if (isOrderBump && !("multiBump" in orderBumpIds)) {
+  const isMulti = Object.keys(lpParams.bump.products).length > 1
+  if (isOrderBump && !isMulti) {
     const addWrapper = document.createElement("div");
     addWrapper.classList.add("add-wrapper");
-    const addButton = createBumpAddButton({ data, container: orderBumpsContainer, wrapper: productWrapper, inCartContainer, prod });
+    const addButton = createBumpAddButton({data, container: orderBumpsContainer, wrapper: productWrapper, inCartContainer, prod, price: lpParams.bump.price, lpParams });
     addWrapper.appendChild(addButton);
-    let qttyWrapper, qttyInput;
-    if (prod.hasQtty) {
-      const maxQtty = typeof prod.hasQtty === "number" ? prod.hasQtty : false;
-      [qttyWrapper, qttyInput] = createQtty({ inputId: `qtty-input-${prod.id}`, maxQtty, addButton, price });
+    let qttyWrapper;
+    if (lpParams.bump.hasQtty) {
+      const maxQtty = typeof lpParams.bump.hasQtty === "number" ? lpParams.bump.hasQtty : false;
+      [qttyWrapper] = createQtty({ inputId: `qtty-input-${prod.id}`, maxQtty, addButton, price: lpParams.bump.price });
       addWrapper.appendChild(qttyWrapper);
     }
     productInfo.appendChild(addWrapper);
@@ -440,7 +439,7 @@ const createProduct = ({ prod, isVariant, isOrderBump, orderBumpsContainer, inCa
   return productWrapper;
 };
 
-const createCart = (data, orderBumpData) => {
+const createCart = (data, orderBumpData, lpParams) => {
   const cartWrapper = document.createElement("div");
   const cartOverlay = document.createElement("div");
   const cart = document.createElement("div");
@@ -472,7 +471,7 @@ const createCart = (data, orderBumpData) => {
   productsContainer.classList.add("cart__prod-container");
   inCartContainer.classList.add("cart__in-cart-container");
   orderBumpsContainer.classList.add("cart__order-bumps-container");
-  const bumpAtTop = Object.keys(orderBumpIds).some((id) => orderBumpIds[id].inTop);
+  const bumpAtTop = lpParams.bumpAtTop;
   if (bumpAtTop) {
     orderBumpsContainer.classList.add("at-top");
     productsContainer.appendChild(orderBumpsContainer);
@@ -506,8 +505,8 @@ const createCart = (data, orderBumpData) => {
 
   cartFoot.appendChild(buyButton);
 
-  if (hasQtty) {
-    cartFoot.appendChild(createQtty({ maxQtty: hasQtty > 1 ? hasQtty : undefined })[0]);
+  if (lpParams.hasQtty) {
+    cartFoot.appendChild(createQtty({ maxQtty: lpParams.hasQtty > 1 ? lpParams.hasQtty : undefined })[0]);
   }
 
   cart.appendChild(cartFoot);
@@ -518,10 +517,10 @@ const createCart = (data, orderBumpData) => {
     return elClone;
   };
 
-  const createMultiBumpWrapper = ({ data, container, inCartContainer, prod }) => {
+  const createMultiBumpWrapper = ({data, container, inCartContainer, prod }) => {
     const multiBumpWrapper = document.createElement("div");
     multiBumpWrapper.classList.add("cart__order-bumps-container__multi-bump-wrapper");
-    const button = createBumpAddButton({ data, container, wrapper: multiBumpWrapper, inCartContainer, prod });
+    const button = createBumpAddButton({data, container, wrapper: multiBumpWrapper, inCartContainer, prod, price: lpParams.bump.price });
     return [multiBumpWrapper, button];
   };
 
@@ -530,31 +529,31 @@ const createCart = (data, orderBumpData) => {
     orderBumpsContainer.innerHTML = "";
     buyButton = replaceElement(buyButton);
     data.forEach((prod) => {
-      const quantity = btnProducts ? btnProducts[prod.id]?.quantity : undefined;
+      const quantity = (btnProducts && btnProducts[prod.id]?.quantity) || lpParams.products[prod.id]?.quantity;
       if (prod.isWhole) {
         prod.variants.forEach((variant) => {
-          inCartContainer.appendChild(createProduct({ prod: variant, isVariant: { title: prod.title, id: prod.id }, quantity }));
+          inCartContainer.appendChild(createProduct({ prod: variant, lpParams, isVariant: { title: prod.title, id: prod.id }, quantity, data }));
         });
       } else {
-        const prodCard = createProduct({ prod, quantity });
+        const prodCard = createProduct({ prod, quantity, lpParams, data });
         if (prodCard) inCartContainer.appendChild(prodCard);
       }
     });
-    if ("multiBump" in orderBumpIds) {
+    if (Object.keys(orderBumpData).length > 1) {
       const [multiBumpWrapper, bumpButton] = createMultiBumpWrapper({ data, container: orderBumpsContainer, inCartContainer, prod: orderBumpData });
       orderBumpsContainer.appendChild(multiBumpWrapper);
       orderBumpData.forEach((prod) => {
-        multiBumpWrapper.appendChild(createProduct({ prod, isOrderBump: true, inCartContainer, orderBumpsContainer: multiBumpWrapper, data }));
+        multiBumpWrapper.appendChild(createProduct({ prod, lpParams, isOrderBump: true, lpParams, inCartContainer, orderBumpsContainer: multiBumpWrapper, data }));
       });
-      multiBumpWrapper.appendChild(bumpButton)
+      multiBumpWrapper.appendChild(bumpButton);
     } else
       orderBumpData.forEach((prod) => {
-        orderBumpsContainer.appendChild(createProduct({ prod, isOrderBump: true, inCartContainer, orderBumpsContainer, data }));
+        orderBumpsContainer.appendChild(createProduct({ prod, lpParams, isOrderBump: true, inCartContainer, orderBumpsContainer, data }));
       });
 
     buyButton.addEventListener("click", async () => {
       buyButton.toggleAttribute("disabled");
-      const result = await buy(data, btnDiscount);
+      const result = await buy(data, btnDiscount, lpParams);
       if (!result) buyButton.toggleAttribute("disabled");
     });
     cartWrapper.classList.toggle("active");

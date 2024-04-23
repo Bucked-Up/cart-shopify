@@ -1,6 +1,6 @@
-import { fetchUrl, apiOptions } from "../variables.js";
 import toggleLoading from "./toggleLoading.js";
 import { dataLayerRedirect } from "./dataLayer.js";
+import { handleFetch } from "../variables.js";
 
 const getVariantId = (data) => {
   const primaryWrapper = document.querySelector(`[primary="${data.id}"]`);
@@ -31,7 +31,7 @@ const getVariantId = (data) => {
   }
 };
 
-const addDiscount = async (checkoutId, code) => {
+const addDiscount = async (checkoutId, code, country) => {
   const postDiscount = async (code) => {
     const input = {
       checkoutId: checkoutId,
@@ -51,10 +51,7 @@ const addDiscount = async (checkoutId, code) => {
       query: query,
       variables: input,
     };
-    const response = await fetch(fetchUrl, {
-      ...apiOptions,
-      body: JSON.stringify(body),
-    });
+    const response = await handleFetch({body, country});
     return response;
   };
 
@@ -67,7 +64,7 @@ const addDiscount = async (checkoutId, code) => {
   return response;
 };
 
-const addCustomAttributes = async (attributes, id) => {
+const addCustomAttributes = async (attributes, id, country) => {
   const input = {
     checkoutId: id,
     input: {
@@ -91,10 +88,7 @@ const addCustomAttributes = async (attributes, id) => {
     query: query,
     variables: input,
   };
-  const response = await fetch(fetchUrl, {
-    ...apiOptions,
-    body: JSON.stringify(body),
-  });
+  const response = await handleFetch({body, country});
   return response;
 };
 
@@ -107,12 +101,12 @@ const startPopsixle = (id) => {
   }
 };
 
-//updates order
-const buy = async (data, btnDiscount) => {
+const buy = async (data, btnDiscount, lpParams) => {
+  const urlParams = new URLSearchParams(window.location.search);
   const variantId = [];
   for (let product of data) {
-    const inputQtty = +document.getElementById(`qtty-input-${product.id}`)?.value || 1
-    const prodQtty = +document.getElementById(`${product.id}-quantity`)?.innerHTML || 1
+    const inputQtty = +document.getElementById(`qtty-input-${product.id}`)?.value || 1;
+    const prodQtty = +document.getElementById(`${product.id}-quantity`)?.innerHTML || 1;
     const quantity = inputQtty * prodQtty;
     if (product.isWhole) {
       variantId.push(
@@ -159,10 +153,7 @@ const buy = async (data, btnDiscount) => {
     variables: input,
   };
   try {
-    const response = await fetch(fetchUrl, {
-      ...apiOptions,
-      body: JSON.stringify(body),
-    });
+    const response = await handleFetch({body, country: lpParams.country});
     const apiData = await response.json();
     if (!response.ok) {
       console.warn(apiData);
@@ -170,21 +161,18 @@ const buy = async (data, btnDiscount) => {
     }
     const checkoutId = apiData.data.checkoutCreate.checkout.id;
     const hasBumpIncreaseDiscount = document.querySelector("[bump-increase-qtty-input]");
-    const bumpDiscount =
-      (hasBumpIncreaseDiscount && orderBumpIds["increase"]?.discountCode) ||
-      orderBumpIds[data.find((prod) => prod.id.includes("ob"))?.id.split("ob")[0]]?.discountCode ||
-      data.find((prod) => prod.id.includes("ob")) && orderBumpIds.multiBump.discountCode
+    const bumpDiscount = (hasBumpIncreaseDiscount && lpParams.bump.discountCode) || (data.find((prod) => prod.id.includes("ob")) && lpParams.bump.discountCode);
     const urlDiscount = urlParams.get("discount");
-    if (discountCode !== "" || btnDiscount || bumpDiscount || urlDiscount) {
+    if (lpParams.discountCode !== "" || btnDiscount || bumpDiscount || urlDiscount) {
       let discount;
-      if (discountCode || btnDiscount) {
-        discount = btnDiscount || discountCode;
+      if (lpParams.discountCode || btnDiscount) {
+        discount = btnDiscount || lpParams.discountCode;
         if (bumpDiscount) {
           discount = `${discount}-${bumpDiscount}`;
         }
       } else discount = bumpDiscount;
       if (urlDiscount) discount = discount ? discount + `-${urlDiscount}` : urlDiscount;
-      const responseDiscount = await addDiscount(checkoutId, discount);
+      const responseDiscount = await addDiscount(checkoutId, discount, lpParams.country);
       if (!responseDiscount.ok) throw new Error("Api Discount Error.");
     }
 
@@ -196,11 +184,12 @@ const buy = async (data, btnDiscount) => {
           value: `${checkoutId.split("?key=")[1]}`,
         },
       ],
-      checkoutId
+      checkoutId,
+      lpParams.country
     );
     if (!attributesResponse.ok) throw new Error("Attributes Error.");
 
-    dataLayerRedirect(data);
+    dataLayerRedirect(lpParams.dataLayer, data);
     window.location.href = apiData.data.checkoutCreate.checkout.webUrl;
     return true;
   } catch (error) {

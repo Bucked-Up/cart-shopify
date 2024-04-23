@@ -1,13 +1,7 @@
-const obj = {
-  step_count: step_count,
-  page_id: page_id,
-  version_id: version_id,
-};
-
-const setDataLayer = ({ event, action, value, currency }) => {
+const setDataLayer = ({ lpDataLayer, event, action, value, currency }) => {
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push({
-    ...obj,
+    ...lpDataLayer,
     event: event,
     action: action,
     value: value,
@@ -16,33 +10,48 @@ const setDataLayer = ({ event, action, value, currency }) => {
   });
 };
 
-const setKlaviyo = (name, item, titles) => {
+const setKlaviyo = (name, item, titles, lpDataLayer) => {
   const currentTime = new Date();
   try {
     klaviyo.push([
       "track",
       name,
-      { ...obj, ...item, products: titles, pagepath: window.location.pathname, pageurl: window.location.href, time: currentTime.getTime() },
+      { ...lpDataLayer, ...item, products: titles, pagepath: window.location.pathname, pageurl: window.location.href, time: currentTime.getTime() },
     ]);
   } catch (err) {
     console.warn("failed klaviyo\n", err);
   }
 };
 
-const dataLayerStart = (data) => {
+const dataLayerStart = (lpDataLayer, data, discountCode) => {
   const titles = data.map((items) => items.title);
-  const item = { event: "pageview", action: "load", value: 0 };
+  const item = { lpDataLayer, event: "pageview", action: "load", value: 0 };
   setDataLayer(item);
+
+  const getTopLevelDomain = () => {
+    const fullDomain = window.location.hostname;
+    const domainRegex = /\.([a-z]{2,})\.([a-z]{2,})$/;
+    const match = fullDomain.match(domainRegex);
+    if (match) {
+        return `.${match[1]}.${match[2]}`;
+    } else {
+        return fullDomain;
+    }
+  };
+  const cookieConfig = `path=/; domain=${getTopLevelDomain()};max-age=3600`;
+  document.cookie = `offer_id=${discountCode};${cookieConfig}`;
+  document.cookie = `page_id=${lpDataLayer.page_id};${cookieConfig}`;
+  
   setTimeout(() => {
-    setKlaviyo("Page View", item, titles);
+    setKlaviyo("Page View", item, titles, lpDataLayer);
   }, 200);
 };
 
-const dataLayerRedirect = (data) => {
+const dataLayerRedirect = (lpDataLayer, data) => {
   const titles = data.map((items) => items.title);
-  const item = { event: "offerview", action: "viewaction", value: 0 };
+  const item = { lpDataLayer, event: "offerview", action: "viewaction", value: 0 };
   setDataLayer(item);
-  setKlaviyo("User Redirect Engagement", item, titles);
+  setKlaviyo("User Redirect Engagement", item, titles, lpDataLayer);
 };
 
 export { dataLayerStart, dataLayerRedirect };

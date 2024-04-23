@@ -1,62 +1,35 @@
-import { apiOptions, fetchUrl } from "../../variables.js";
+import { handleFetch } from "../../variables.js";
 
-const filterVariants = (data, ids, isOrderBump) => {
-  const containsNumber = (str) => /\d/.test(str);
-  const getVariants = (id) => {
-    const idStart = "gid://shopify/ProductVariant/";
-    const idsArray = typeof id == "string" ? id.split("-") : false;
-    const properties = { isWhole: idsArray && idsArray.includes("whole"), oneCard: idsArray && idsArray.includes("oneCard") };
-    if (idsArray && containsNumber(id.split("-")[1])) {
-      const filteredIds = [];
-      for (let i = 0; i < idsArray.length && containsNumber(idsArray[i]); i++) {
-        filteredIds.push(idStart + idsArray[i]);
-      }
-      return { ids: filteredIds, ...properties };
-    }
-    return { ids: null, ...properties };
-  };
-
+const filterVariants = (data, products, isOrderBump) => {
+  const ids = Object.keys(products);
   const isNotAvailable = (variant) => variant.node.availableForSale === false;
   const isAvailable = (variant) => variant.node.availableForSale === true;
 
-  const addCustomTitle = (id) => {
-    const isMulti = "multiBump" in orderBumpIds
-    if (isMulti && "title" in orderBumpIds.multiBump.products[id]) {
-      data.find((prod) => prod.id.includes(id)).title = orderBumpIds.multiBump.products[id].title;
-      return;
-    }
-    if (!isMulti && "title" in orderBumpIds[id]) {
-      data.find((prod) => prod.id.includes(id)).title = orderBumpIds[id]?.title
-    }
-  };
-
-  const setIsOrderBump = (id) => {
-    if (isOrderBump) {
-      const prod = data.find((prod) => prod.id.includes(id));
-      prod.id = prod.id + "ob";
-      addCustomTitle(id);
-    }
-  };
-
   ids.forEach((id) => {
-    setIsOrderBump(id);
-    const variants = getVariants(id);
-    const hasQtty = id in orderBumpIds && orderBumpIds[id].hasQtty;
-    if (variants.ids || variants.isWhole || variants.oneCard || hasQtty) {
-      const prod = data.find((prod) => prod.id.includes(id.split("-")[0]));
-      if (hasQtty) prod.hasQtty = hasQtty;
-      if (variants.oneCard) prod.oneCard = true;
-      if (variants.ids) prod.variants.edges = prod.variants.edges.filter((filteredVariant) => variants.ids.includes(filteredVariant.node.id));
-      if (variants.isWhole) {
+    const prod = data.find((prod) => prod.id.includes(id));
+    const currentProduct = products[id]
+    if (isOrderBump) {
+      prod.id = prod.id + "ob";
+    }
+    if ("title" in currentProduct) {
+      prod.title = currentProduct.title
+    }
+    if (Object.keys(products).length > 0) {
+      if(currentProduct.title) prod.title = currentProduct.title
+      if (currentProduct.hasQtty) prod.hasQtty = hasQtty;
+      if (currentProduct.oneCard) prod.oneCard = true;
+      if (currentProduct.variants) prod.variants.edges = prod.variants.edges.filter((filteredVariant) => currentProduct.variants.includes(+filteredVariant.node.id.split("ProductVariant/")[1]));
+      if (currentProduct.isWhole) {
         prod.availableForSale = prod.variants.edges.every(isAvailable);
         prod.isWhole = true;
-      } else if (variants.ids) prod.availableForSale = !prod.variants.edges.every(isNotAvailable);
+      } else if (currentProduct.variants) prod.availableForSale = !prod.variants.edges.every(isNotAvailable);
     }
   });
 };
 
-const fetchProduct = async ({ ids, isOrderBump = false }) => {
-  if (isOrderBump && "increase" in orderBumpIds) return ["increase"];
+const fetchProduct = async ({ products, isOrderBump = false, country }) => {
+  if (isOrderBump && "increase" in products) return ["increase"];
+  const ids = Object.keys(products);
   const query = `
   { 
     nodes(ids: [${ids.map((id) => `"gid://shopify/Product/${id}"`)}]) {
@@ -97,17 +70,14 @@ const fetchProduct = async ({ ids, isOrderBump = false }) => {
   }
   `;
   try {
-    const response = await fetch(fetchUrl, {
-      ...apiOptions,
-      body: JSON.stringify({ query: query }),
-    });
+    const response = await handleFetch({body: {query}, country})
     let data = await response.json();
     if (!response.ok || data.data.nodes.some((prod) => prod === null)) {
       console.warn(data);
       throw new Error("Error Fetching Api.");
     }
     data = data.data.nodes;
-    filterVariants(data, ids, isOrderBump);
+    filterVariants(data, products, isOrderBump);
 
     data.forEach((prod) => {
       if (!prod.availableForSale) console.warn("Out of stock: ", prod.id, prod.title);
