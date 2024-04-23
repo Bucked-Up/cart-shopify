@@ -51,7 +51,7 @@ const addDiscount = async (checkoutId, code, country) => {
       query: query,
       variables: input,
     };
-    const response = await handleFetch({body, country});
+    const response = await handleFetch({ body, country });
     return response;
   };
 
@@ -88,7 +88,7 @@ const addCustomAttributes = async (attributes, id, country) => {
     query: query,
     variables: input,
   };
-  const response = await handleFetch({body, country});
+  const response = await handleFetch({ body, country });
   return response;
 };
 
@@ -101,7 +101,7 @@ const startPopsixle = (id) => {
   }
 };
 
-const buy = async (data, btnDiscount, lpParams) => {
+const buy = async (data, btnDiscount, lpParams, noCart = undefined) => {
   const urlParams = new URLSearchParams(window.location.search);
   const variantId = [];
   for (let product of data) {
@@ -114,7 +114,7 @@ const buy = async (data, btnDiscount, lpParams) => {
           return { id: variant.id, quantity };
         })
       );
-    } else if (product.variants.length > 1) {
+    } else if (product.variants.length > 1 && !noCart) {
       const selectedVariant = getVariantId(product);
       if (!selectedVariant.result) {
         alert(selectedVariant.message);
@@ -122,7 +122,7 @@ const buy = async (data, btnDiscount, lpParams) => {
         return false;
       }
       variantId.push({ id: selectedVariant.result, quantity });
-    } else variantId.push({ id: product.variants[0].id, quantity });
+    } else variantId.push({ id: product.variants[0].id, quantity: product.quantity });
   }
 
   toggleLoading();
@@ -153,7 +153,7 @@ const buy = async (data, btnDiscount, lpParams) => {
     variables: input,
   };
   try {
-    const response = await handleFetch({body, country: lpParams.country});
+    const response = await handleFetch({ body, country: lpParams.country });
     const apiData = await response.json();
     if (!response.ok) {
       console.warn(apiData);
