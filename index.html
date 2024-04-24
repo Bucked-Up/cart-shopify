@@ -17,10 +17,47 @@
 
 <body>
   <div class="custom-html">
-    <button id="BTN-1">1</button>
-    <button id="BTN-2">2</button>
-    <button id="BTN-3">3</button>
+    <button id="btn-1">1</button>
+    <button id="btn-2">2</button>
+    <button id="btn-3">3</button>
   </div>
 </body>
 
 </html>
+
+<script type="module">
+  import shopifyApiCode from "./src/js/scripts.js"
+  shopifyApiCode({
+    noCart: true,
+    country: "us",
+    dataLayer: {
+      step_count: "",
+      page_id: "rut-lp-ops",
+      version_id: "rut-lp-ops",
+    },
+    products: {
+      8858114064690: {},
+    },
+    buttons: {
+      "btn-1": {
+        products: {
+          8858114064690: { quantity: 4 }
+        },
+        discountCode: "rutroh4"
+      },
+      "btn-2": {
+        products: {
+          8858114064690: {}
+        },
+        discountCode: "rutroh1"
+      },
+      "btn-3": {
+        products: {
+          8858114064690: { quantity: 2 }
+        },
+        discountCode: "rutroh2"
+      },
+    },
+    discountCode: "",
+  });
+</script>

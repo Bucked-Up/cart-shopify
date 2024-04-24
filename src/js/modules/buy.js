@@ -122,7 +122,7 @@ const buy = async (data, btnDiscount, lpParams, noCart = undefined) => {
         return false;
       }
       variantId.push({ id: selectedVariant.result, quantity });
-    } else variantId.push({ id: product.variants[0].id, quantity });
+    } else variantId.push({ id: product.variants[0].id, quantity: lpParams.noCart ? product.quantity : quantity });
   }
 
   toggleLoading();
