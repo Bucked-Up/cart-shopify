@@ -59,36 +59,3 @@ const shopifyApiCode = async (lpParams) => {
   }
   toggleLoading();
 };
-
-shopifyApiCode({
-  country: "us",
-  dataLayer: {
-    step_count: "",
-    page_id: "",
-    version_id: "",
-  },
-  products: {
-    9037941342514: {},
-    9123402547506: {},
-    8685143195954: {},
-  },
-  bump: {
-    products: {
-      8685147062578: { title: "First, choose your Perfect Shaker Bottle" },
-      8685143195954: {},
-    },
-    price: 9.99,
-    discountCode: "KSUPGRADE",
-  },
-  buttons: {
-    "BTN-1": {
-      products: {
-        9123402547506: {},
-        8685143195954: { quantity: 3 },
-      },
-      discountCode: "kssrfb2",
-    },
-    "BTN-2": {},
-  },
-  discountCode: "kssrfb1",
-});
