@@ -11,8 +11,8 @@
 ### 2. Place this code and change as necessary into html/css footer
 
 ```
-<script src="https://cdn.jsdelivr.net/gh/Bucked-Up/cart-shopify@2/src/js/scripts.js" type="module"></script>
 <script type="module">
+  import shopifyApiCode from "https://cdn.jsdelivr.net/gh/Bucked-Up/cart-shopify@2/src/js/scripts.js"
   shopifyApiCode({
     country: "us",
     dataLayer: {

@@ -59,3 +59,5 @@ const shopifyApiCode = async (lpParams) => {
   }
   toggleLoading();
 };
+
+export default shopifyApiCode;
