@@ -8,7 +8,7 @@ const shopifyApiCode = async (lpParams) => {
   toggleLoading();
   const [data, orderBumpData] = await Promise.all([
     fetchProduct({ products: lpParams.products, country: lpParams.country }),
-    fetchProduct({ products: lpParams.bump.products, isOrderBump: true, country: lpParams.country }),
+    lpParams.bump && fetchProduct({ products: lpParams.bump.products, isOrderBump: true, country: lpParams.country }),
   ]);
   dataLayerStart(lpParams.dataLayer, data, lpParams.discountCode);
   const noStock = (el) => !el.availableForSale;
@@ -61,17 +61,15 @@ const shopifyApiCode = async (lpParams) => {
 };
 
 shopifyApiCode({
-  noCart: true,
-  dataLayer: {
-    step_count: "test",
-    page_id: "test2",
-    version_id: "test3",
-  },
-  hasQtty: false,
   country: "us",
+  dataLayer: {
+    step_count: "",
+    page_id: "",
+    version_id: "",
+  },
   products: {
     9037941342514: {},
-    9123402547506: { title: "test", quantity: 2 },
+    9123402547506: {},
     8685143195954: {},
   },
   bump: {
@@ -81,17 +79,16 @@ shopifyApiCode({
     },
     price: 9.99,
     discountCode: "KSUPGRADE",
-    hasQtty: false,
   },
-  bumpAtTop: false,
   buttons: {
     "BTN-1": {
       products: {
-        // 9037941342514: {},
         9123402547506: {},
-        8685143195954: {quantity: 3},
+        8685143195954: { quantity: 3 },
       },
+      discountCode: "kssrfb2",
     },
+    "BTN-2": {},
   },
   discountCode: "kssrfb1",
 });

@@ -421,7 +421,7 @@ const createProduct = ({ prod, isVariant, isOrderBump, orderBumpsContainer, inCa
     else if (!prod.oneCard) handleSimpleProduct({ prod, productInfo, img });
     else handleOneCardProduct({ prod, productInfo });
   }
-  const isMulti = Object.keys(lpParams.bump.products).length > 1
+  const isMulti = isOrderBump && Object.keys(lpParams.bump.products).length > 1
   if (isOrderBump && !isMulti) {
     const addWrapper = document.createElement("div");
     addWrapper.classList.add("add-wrapper");
@@ -539,14 +539,14 @@ const createCart = (data, orderBumpData, lpParams) => {
         if (prodCard) inCartContainer.appendChild(prodCard);
       }
     });
-    if (Object.keys(orderBumpData).length > 1) {
+    if (orderBumpData && Object.keys(orderBumpData).length > 1) {
       const [multiBumpWrapper, bumpButton] = createMultiBumpWrapper({ data, container: orderBumpsContainer, inCartContainer, prod: orderBumpData });
       orderBumpsContainer.appendChild(multiBumpWrapper);
       orderBumpData.forEach((prod) => {
         multiBumpWrapper.appendChild(createProduct({ prod, lpParams, isOrderBump: true, lpParams, inCartContainer, orderBumpsContainer: multiBumpWrapper, data }));
       });
       multiBumpWrapper.appendChild(bumpButton);
-    } else
+    } else if(orderBumpData)
       orderBumpData.forEach((prod) => {
         orderBumpsContainer.appendChild(createProduct({ prod, lpParams, isOrderBump: true, inCartContainer, orderBumpsContainer, data }));
       });

@@ -1,13 +1,4 @@
 // @import "./reset";
-// * {
-//   box-sizing: border-box;
-// }
-
-// :root {
-//   --primary: #0038ff;
-//   --secondary: #e3f5ff;
-//   --text-color: black;
-// }
 @import "./loading-screen";
 
 .no-scroll {
@@ -21,7 +12,7 @@
       border-radius: 8px;
     }
     &-thumb {
-      background: var(--primary);
+      background: #0038ff;
       border-radius: 8px;
     }
   }
@@ -280,7 +271,7 @@
       &:hover,
       &:focus,
       &.active {
-        border-color: var(--primary);
+        border-color: #0038ff;
       }
       &.active {
         .cart__dropdown__variants {
@@ -311,7 +302,7 @@
         @include scrollBar();
         .button-wrapper {
           input:checked + label .label-ball:after {
-            background-color: var(--primary);
+            background-color: #0038ff;
           }
           label {
             display: flex;
@@ -322,7 +313,7 @@
             &:hover,
             &:focus {
               .label-ball {
-                border-color: var(--primary);
+                border-color: #0038ff;
               }
             }
             .label-ball {
@@ -379,7 +370,7 @@
         width: 100%;
       }
       &:hover {
-        border-color: var(--primary);
+        border-color: #0038ff;
       }
     }
     &__variant-selection {
@@ -436,7 +427,7 @@
           cursor: pointer;
           &:hover,
           &:focus {
-            border-color: var(--primary);
+            border-color: #0038ff;
           }
           padding: 0.25rem;
           .label-text {
@@ -457,8 +448,8 @@
           }
         }
         input:checked + label {
-          border-color: var(--primary);
-          background-color: var(--secondary);
+          border-color: #0038ff;
+          background-color: #e3f5ff;
         }
         &--placeholder {
           .placeholder__text-wrapper {
