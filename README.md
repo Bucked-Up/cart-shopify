@@ -14,6 +14,7 @@
 <script type="module">
   import shopifyApiCode from "https://cdn.jsdelivr.net/gh/Bucked-Up/cart-shopify@2/src/js/scripts.js"
   shopifyApiCode({
+    noCart: false,
     country: "us",
     dataLayer: {
       step_count: "",
