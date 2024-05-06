@@ -70,6 +70,8 @@ You can add a quantity property to a product.
 
 You can add a hasQtty property to the bump, as well as the cart itself.
 
+You can add a variantOf property to a product.
+
 you can add a variants property to a product.
 
 ```

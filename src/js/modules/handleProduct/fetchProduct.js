@@ -7,18 +7,27 @@ const filterVariants = (data, products, isOrderBump) => {
 
   ids.forEach((id) => {
     const prod = data.find((prod) => prod.id.includes(id));
-    const currentProduct = products[id]
+    const currentProduct = products[id];
     if (isOrderBump) {
       prod.id = prod.id + "ob";
     }
     if ("title" in currentProduct) {
-      prod.title = currentProduct.title
+      prod.title = currentProduct.title;
     }
     if (Object.keys(products).length > 0) {
-      if(currentProduct.title) prod.title = currentProduct.title
+      if (currentProduct.title) prod.title = currentProduct.title;
       if (currentProduct.hasQtty) prod.hasQtty = hasQtty;
       if (currentProduct.oneCard) prod.oneCard = true;
-      if (currentProduct.variants) prod.variants.edges = prod.variants.edges.filter((filteredVariant) => currentProduct.variants.includes(+filteredVariant.node.id.split("ProductVariant/")[1]));
+      if (currentProduct.variants)
+        prod.variants.edges = prod.variants.edges.filter((filteredVariant) =>
+          currentProduct.variants.includes(+filteredVariant.node.id.split("ProductVariant/")[1])
+        );
+      if (currentProduct.variantOf) {
+        prod.variantOf = currentProduct.variantOf;
+        const mainProd = data.find((prod) => prod.id.includes(currentProduct.variantOf));
+        mainProd.variants.edges.push(prod.variants.edges[0]);
+        for (let i = 0; i < data.length; i++) if (data[i].id === prod.id) data.splice(i, 1);
+      }
       if (currentProduct.isWhole) {
         prod.availableForSale = prod.variants.edges.every(isAvailable);
         prod.isWhole = true;
@@ -70,7 +79,7 @@ const fetchProduct = async ({ products, isOrderBump = false, country }) => {
   }
   `;
   try {
-    const response = await handleFetch({body: {query}, country})
+    const response = await handleFetch({ body: { query }, country });
     let data = await response.json();
     if (!response.ok || data.data.nodes.some((prod) => prod === null)) {
       console.warn(data);

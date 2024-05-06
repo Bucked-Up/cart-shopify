@@ -20,6 +20,7 @@
     <button id="btn-1">1</button>
     <button id="btn-2">2</button>
     <button id="btn-3">3</button>
+    <button id="btn-4">3</button>
   </div>
 </body>
 
@@ -28,35 +29,46 @@
 <script type="module">
   import shopifyApiCode from "./src/js/scripts.js"
   shopifyApiCode({
-    noCart: true,
     country: "us",
     dataLayer: {
       step_count: "",
-      page_id: "rut-lp-ops",
-      version_id: "rut-lp-ops",
+      page_id: "",
+      version_id: "",
     },
     products: {
-      8858114064690: {},
+      8820417003826: { oneCard: true },
+      9322259775794: { variantOf: 8820417003826 },
+      8858111377714: {},
+      8768929825074: {},
     },
     buttons: {
       "btn-1": {
         products: {
-          8858114064690: { quantity: 4 }
+          8820417003826: {
+            quantity: 2
+          },
+          8858111377714: {}
         },
-        discountCode: "rutroh4"
+        discountCode: "Getboost2-babeboostfreegifts2"
       },
       "btn-2": {
         products: {
-          8858114064690: {}
+          8820417003826: {
+            quantity: 4
+          },
+          8858111377714: {},
+          8768929825074: {}
         },
-        discountCode: "rutroh1"
+        discountCode: "Getboost4-babeboostfreegifts4"
       },
       "btn-3": {
         products: {
-          8858114064690: { quantity: 2 }
+          8820417003826: {},
+          8858111377714: {},
         },
-        discountCode: "rutroh2"
+        discountCode: "Getboost1"
       },
+      'btn-4': {}
     },
     discountCode: "",
   });
