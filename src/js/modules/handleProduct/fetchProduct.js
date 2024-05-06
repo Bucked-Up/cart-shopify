@@ -23,10 +23,15 @@ const filterVariants = (data, products, isOrderBump) => {
           currentProduct.variants.includes(+filteredVariant.node.id.split("ProductVariant/")[1])
         );
       if (currentProduct.variantOf) {
-        prod.variantOf = currentProduct.variantOf;
         const mainProd = data.find((prod) => prod.id.includes(currentProduct.variantOf));
-        mainProd.variants.edges.push(prod.variants.edges[0]);
-        for (let i = 0; i < data.length; i++) if (data[i].id === prod.id) data.splice(i, 1);
+        prod.variants.edges.forEach((variant) => {
+          mainProd.variants.edges.push(variant);
+        });
+        for (let i = 0; i < data.length; i++)
+          if (data[i].id === prod.id) {
+            data.splice(i, 1);
+            break;
+          }
       }
       if (currentProduct.isWhole) {
         prod.availableForSale = prod.variants.edges.every(isAvailable);
