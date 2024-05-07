@@ -107,11 +107,12 @@ const buy = async (data, btnDiscount, lpParams, noCart = undefined) => {
   for (let product of data) {
     const inputQtty = +document.getElementById(`qtty-input-${product.id}`)?.value || 1;
     const prodQtty = +document.getElementById(`${product.id}-quantity`)?.innerHTML || 1;
-    const quantity = inputQtty * prodQtty;
+    let quantity = inputQtty * prodQtty;
     if (product.isWhole) {
       variantId.push(
         ...product.variants.map((variant) => {
-          return { id: variant.id, quantity };
+          const variantQuantity = inputQtty * (+document.getElementById(`${variant.id}-quantity`)?.innerHTML || 1);
+          return { id: variant.id, quantity: variantQuantity };
         })
       );
     } else if (product.variants.length > 1 && !noCart) {
@@ -156,6 +157,7 @@ const buy = async (data, btnDiscount, lpParams, noCart = undefined) => {
     const response = await handleFetch({ body, country: lpParams.country });
     const apiData = await response.json();
     if (!response.ok) {
+      console.warn(response);
       console.warn(apiData);
       throw new Error("Api Error.");
     }

@@ -87,6 +87,7 @@ const fetchProduct = async ({ products, isOrderBump = false, country }) => {
     const response = await handleFetch({ body: { query }, country });
     let data = await response.json();
     if (!response.ok || data.data.nodes.some((prod) => prod === null)) {
+      console.warn(response)
       console.warn(data);
       throw new Error("Error Fetching Api.");
     }

@@ -72,12 +72,20 @@ You can add a hasQtty property to the bump, as well as the cart itself.
 
 You can add a variantOf property to a product.
 
-you can add a variants property to a product.
+You can add a variants property to a product.
 
 ```
 products: {
   999: {variants: [9998,9997]},
 },
+```
+
+Products can have variantsOptions.
+
+```
+variantsOptions: {
+  9998: { quantity: 5 }
+}
 ```
 
 You can add how much you want from the product depending on the button, the discountCode and the products you want from the specific button. Ex:

@@ -532,7 +532,9 @@ const createCart = (data, orderBumpData, lpParams) => {
       const quantity = (btnProducts && btnProducts[prod.id]?.quantity) || lpParams.products[prod.id]?.quantity;
       if (prod.isWhole) {
         prod.variants.forEach((variant) => {
-          inCartContainer.appendChild(createProduct({ prod: variant, lpParams, isVariant: { title: prod.title, id: prod.id }, quantity, data }));
+          const variantsOptions = lpParams.products[prod.id]?.variantsOptions
+          const variantQuantity = variantsOptions && variantsOptions[variant.id.split("ProductVariant/")[1]]?.quantity
+          inCartContainer.appendChild(createProduct({ prod: variant, lpParams, isVariant: { title: prod.title, id: variant.id }, quantity: variantQuantity || quantity, data }));
         });
       } else {
         const prodCard = createProduct({ prod, quantity, lpParams, data });

@@ -20,7 +20,7 @@
     <button id="btn-1">1</button>
     <button id="btn-2">2</button>
     <button id="btn-3">3</button>
-    <button id="btn-4">3</button>
+    <button id="btn-4">4</button>
   </div>
 </body>
 
@@ -29,46 +29,25 @@
 <script type="module">
   import shopifyApiCode from "./src/js/scripts.js"
   shopifyApiCode({
-    country: "us",
+    country: "au",
     dataLayer: {
       step_count: "",
       page_id: "",
       version_id: "",
     },
     products: {
-      8820417003826: { oneCard: true },
-      9322259775794: { variantOf: 8820417003826 },
-      8858111377714: {},
-      8768929825074: {},
+      6967158964327: { primary: [40677387108455] },
+      6967159423079: { isWhole: true, variants: [40677388615783] },
+      6967168598119: {
+        isWhole: true,
+        variants: [40677403590759, 40677403623527, 40677403656295, 40677403689063],
+        variantsOptions: {
+          40677403590759: { quantity: 5 }
+        }
+      },
     },
     buttons: {
-      "btn-1": {
-        products: {
-          8820417003826: {
-            quantity: 2
-          },
-          8858111377714: {}
-        },
-        discountCode: "Getboost2-babeboostfreegifts2"
-      },
-      "btn-2": {
-        products: {
-          8820417003826: {
-            quantity: 4
-          },
-          8858111377714: {},
-          8768929825074: {}
-        },
-        discountCode: "Getboost4-babeboostfreegifts4"
-      },
-      "btn-3": {
-        products: {
-          8820417003826: {},
-          8858111377714: {},
-        },
-        discountCode: "Getboost1"
-      },
-      'btn-4': {}
+      'btn-1': {}
     },
     discountCode: "",
   });
