@@ -105,6 +105,10 @@ const handleComplexProduct = ({ prod, productInfo, img }) => {
     return false;
   });
 
+  const initialVariant = prod.variants.find(variant=>variant.title.includes(primaryOption.values[0]))
+  img.src = initialVariant.image.src
+  img.alt = initialVariant.title
+
   const createBase = (text) => {
     const dropdown = createDropdown(text);
     const variantsWrapper = document.createElement("div");
