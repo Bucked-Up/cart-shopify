@@ -87,7 +87,7 @@ const fetchProduct = async ({ products, isOrderBump = false, country }) => {
     const response = await handleFetch({ body: { query }, country });
     let data = await response.json();
     if (!response.ok || data.data.nodes.some((prod) => prod === null)) {
-      console.warn(response)
+      console.warn(response);
       console.warn(data);
       throw new Error("Error Fetching Api.");
     }
@@ -95,7 +95,10 @@ const fetchProduct = async ({ products, isOrderBump = false, country }) => {
     filterVariants(data, products, isOrderBump);
 
     data.forEach((prod) => {
-      if (!prod.availableForSale) console.warn("Out of stock: ", prod.id, prod.title);
+      if (!prod.availableForSale) {
+        console.warn("Out of stock: ", prod.id, prod.title);
+        return;
+      }
       prod.id = prod.id.split("/").slice(-1)[0];
 
       prod.variants = prod.variants.edges.filter((edge) => edge.node.availableForSale);

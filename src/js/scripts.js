@@ -32,7 +32,7 @@ const shopifyApiCode = async (lpParams) => {
       });
     });
   } else {
-    const updateCartProducts = createCart(data, orderBumpData, lpParams);
+    const updateCartProducts = createCart(data, orderBumpData?.some(noStock) ? undefined : orderBumpData, lpParams);
     buttons.forEach((btn) => {
       btn.addEventListener("click", () => {
         let btnData;
