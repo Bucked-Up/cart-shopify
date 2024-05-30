@@ -5,6 +5,11 @@ import { createCart } from "./modules/handleCart.js";
 import buy from "./modules/buy.js";
 
 const shopifyApiCode = async (lpParams) => {
+  window.addEventListener("pageshow", function (event) {
+    if (event.persisted) {
+      document.body.classList.remove("loading")
+    }
+  });
   toggleLoading();
   const [data, orderBumpData] = await Promise.all([
     fetchProduct({ products: lpParams.products, country: lpParams.country }),
@@ -26,9 +31,9 @@ const shopifyApiCode = async (lpParams) => {
         const filteredData = btnProducts ? data.filter((prod) => prod.id in btnProducts) : data;
         filteredData.forEach((prod) => (prod.quantity = (btnProducts && btnProducts[prod.id].quantity) || lpParams.products[prod.id].quantity || 1));
         btnData = filteredData;
-        if (!btn.hasAttribute("disabled")) {
-          buy(btnData, lpParams.buttons[btn.id].discountCode, lpParams, true);
-        }
+        // if (!btn.hasAttribute("disabled")) {
+        buy(btnData, lpParams.buttons[btn.id].discountCode, lpParams, true);
+        // }
       });
     });
   } else {
@@ -51,9 +56,9 @@ const shopifyApiCode = async (lpParams) => {
           }
         });
         btnData = increasedData;
-        if (!btn.hasAttribute("disabled")) {
-          updateCartProducts(btnData, lpParams.buttons[btn.id].discountCode, btnProducts, lpParams);
-        }
+        // if (!btn.hasAttribute("disabled")) {
+        updateCartProducts(btnData, lpParams.buttons[btn.id].discountCode, btnProducts, lpParams);
+        // }
       });
     });
   }

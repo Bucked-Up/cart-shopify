@@ -558,9 +558,9 @@ const createCart = (data, orderBumpData, lpParams) => {
       });
 
     buyButton.addEventListener("click", async () => {
-      buyButton.toggleAttribute("disabled");
+      // buyButton.toggleAttribute("disabled");
       const result = await buy(data, btnDiscount, lpParams);
-      if (!result) buyButton.toggleAttribute("disabled");
+      // if (!result) buyButton.toggleAttribute("disabled");
     });
     cartWrapper.classList.toggle("active");
     document.body.classList.toggle("no-scroll");
