@@ -42,4 +42,24 @@ const handleFetch = async ({ body, country }) => {
   return response;
 };
 
-export { handleFetch };
+const getBenProducts = async ({ ids, country }) => {
+  let fetchUrl = "https://ar5vgv5qw5.execute-api.us-east-1.amazonaws.com/list/";
+  const fetchApi = async (id) => {
+    let url = `${fetchUrl}${id}`;
+    if (country && country !== "us") url = url + `?country=${country}`;
+    try {
+      const response = await fetch(url);
+      if (response.status === 404) throw new Error("Product Not Found.");
+      if (response.status == 500 || response.status == 400) throw new Error("Sorry, there was a problem.");
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      alert("Product not found.");
+      return Promise.reject(error);
+    }
+  };
+  const data = await Promise.all(ids.map(fetchApi));
+  return data.map((data) => data.product);
+};
+
+export { handleFetch, getBenProducts };

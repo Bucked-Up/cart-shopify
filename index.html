@@ -10,7 +10,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
   <!-- STYLE AND SCRIPTS -->
   <link rel="stylesheet" href="./src/scss/style.css">
-  <script src="./src/js/instapage/script.js" defer></script>
   <script src="./src/js/scripts.js" type="module" defer></script>
   <title>Document</title>
 </head>
@@ -28,29 +27,56 @@
 
 <script type="module">
   import shopifyApiCode from "./src/js/scripts.js"
+  // shopifyApiCode({
+  //   country: "us",
+  //   dataLayer: {
+  //     step_count: "",
+  //     page_id: "KSFB3",
+  //     version_id: "KSFB3",
+  //   },
+  //   products: {
+  //     8820417003826: {isWhole: true},
+  //   },
+  //   buttons: {
+  //     "btn-1": {},
+  //   },
+  //   discountCode: "KSFB3",
+  // });
   shopifyApiCode({
     country: "us",
+    isBenSys: {
+      asd: "dsa"
+    },
     dataLayer: {
       step_count: "",
       page_id: "KSFB3",
       version_id: "KSFB3",
     },
     products: {
-      9037941342514: {},
-      9123402547506: {},
-      8685143195954: {},
-    },
-    bump: {
-      products: {
-        // 8685143195954: {},
-        8858113868082: {},
-      },
-      price: 4.95,
-      discountCode: "KSUPGRADE",
+      1129: {},
     },
     buttons: {
       "btn-1": {},
     },
     discountCode: "KSFB3",
   });
+  // shopifyApiCode({
+  //   country: "au",
+  //   isBenSys: {
+  //     asd: "dsa"
+  //   },
+  //   dataLayer: {
+  //     step_count: "",
+  //     page_id: "KSFB3",
+  //     version_id: "KSFB3",
+  //   },
+  //   products: {
+  //     1397: {},
+  //     // 8820417003826: {},
+  //   },
+  //   buttons: {
+  //     "btn-1": {},
+  //   },
+  //   discountCode: "KSFB3",
+  // });
 </script>

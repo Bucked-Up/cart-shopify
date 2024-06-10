@@ -112,7 +112,7 @@ const buy = async (data, btnDiscount, lpParams, noCart = undefined) => {
       variantId.push(
         ...product.variants.map((variant) => {
           const variantQuantity = inputQtty * (+document.getElementById(`${variant.id}-quantity`)?.innerHTML || 1);
-          return { id: variant.id, quantity: variantQuantity };
+          return { id: variant.id, quantity: variantQuantity, prodId: product.id };
         })
       );
     } else if (product.variants.length > 1 && !noCart) {
@@ -122,8 +122,8 @@ const buy = async (data, btnDiscount, lpParams, noCart = undefined) => {
         if (selectedVariant.wrapper) selectedVariant.wrapper.classList.add("shake");
         return false;
       }
-      variantId.push({ id: selectedVariant.result, quantity });
-    } else variantId.push({ id: product.variants[0].id, quantity: lpParams.noCart ? product.quantity : quantity });
+      variantId.push({ id: selectedVariant.result, quantity, prodId: product.id });
+    } else variantId.push({ id: product.variants[0].id, quantity: lpParams.noCart ? product.quantity : quantity, prodId: product.id });
   }
 
   toggleLoading();
@@ -133,70 +133,85 @@ const buy = async (data, btnDiscount, lpParams, noCart = undefined) => {
   const obj = variantId.map((variant) => {
     return { variantId: variant.id, quantity: globalQuantity * variant.quantity };
   });
-  const input = {
-    input: {
-      lineItems: [...obj],
-    },
-  };
-  const query = `
-    mutation checkoutCreate($input: CheckoutCreateInput!) {
-      checkoutCreate(input: $input) {
-        checkout {
-          webUrl
-          id
-          currencyCode
+  if ("isBenSys" in lpParams) {
+    let string = "";
+    variantId.forEach((product, i) => {
+      console.log(product);
+      const [variantId, optionID] = product.id.split("option");
+      string =
+        string +
+        `&products[${i}][id]=${product.prodId.split("id")[0]}&products[${i}][quantity]=${product.quantity}&products[${i}][options][${optionID}]=${variantId}`;
+    });
+    console.log(
+      `https://${lpParams.country && lpParams.country !== "us" ? lpParams.country + "." : ""}buckedup.com/cart/add?${string}&clear=true&${urlParams}`
+    );
+  } else {
+    const input = {
+      input: {
+        lineItems: [...obj],
+      },
+    };
+    const query = `
+      mutation checkoutCreate($input: CheckoutCreateInput!) {
+        checkoutCreate(input: $input) {
+          checkout {
+            webUrl
+            id
+            currencyCode
+          }
         }
       }
-    }
-  `;
-  const body = {
-    query: query,
-    variables: input,
-  };
-  try {
-    const response = await handleFetch({ body, country: lpParams.country });
-    const apiData = await response.json();
-    if (!response.ok) {
-      console.warn(response);
-      console.warn(apiData);
-      throw new Error("Api Error.");
-    }
-    const checkoutId = apiData.data.checkoutCreate.checkout.id;
-    const hasBumpIncreaseDiscount = document.querySelector("[bump-increase-qtty-input]");
-    const bumpDiscount = (hasBumpIncreaseDiscount && lpParams.bump.discountCode) || (data.find((prod) => prod.id.includes("ob")) && lpParams.bump.discountCode);
-    const urlDiscount = urlParams.get("discount");
-    if (lpParams.discountCode !== "" || btnDiscount || bumpDiscount || urlDiscount) {
-      let discount;
-      if (lpParams.discountCode || btnDiscount) {
-        discount = btnDiscount || lpParams.discountCode;
-        if (bumpDiscount) {
-          discount = `${discount}-${bumpDiscount}`;
-        }
-      } else discount = bumpDiscount;
-      if (urlDiscount) discount = discount ? discount + `-${urlDiscount}` : urlDiscount;
-      const responseDiscount = await addDiscount(checkoutId, discount, lpParams.country);
-      if (!responseDiscount.ok) throw new Error("Api Discount Error.");
-    }
+    `;
+    const body = {
+      query: query,
+      variables: input,
+    };
+    try {
+      const response = await handleFetch({ body, country: lpParams.country });
+      const apiData = await response.json();
+      if (!response.ok) {
+        console.warn(response);
+        console.warn(apiData);
+        throw new Error("Api Error.");
+      }
+      const checkoutId = apiData.data.checkoutCreate.checkout.id;
+      const hasBumpIncreaseDiscount = document.querySelector("[bump-increase-qtty-input]");
+      const bumpDiscount =
+        (hasBumpIncreaseDiscount && lpParams.bump.discountCode) || (data.find((prod) => prod.id.includes("ob")) && lpParams.bump.discountCode);
+      const urlDiscount = urlParams.get("discount");
+      if (lpParams.discountCode !== "" || btnDiscount || bumpDiscount || urlDiscount) {
+        let discount;
+        if (lpParams.discountCode || btnDiscount) {
+          discount = btnDiscount || lpParams.discountCode;
+          if (bumpDiscount) {
+            discount = `${discount}-${bumpDiscount}`;
+          }
+        } else discount = bumpDiscount;
+        if (urlDiscount) discount = discount ? discount + `-${urlDiscount}` : urlDiscount;
+        const responseDiscount = await addDiscount(checkoutId, discount, lpParams.country);
+        if (!responseDiscount.ok) throw new Error("Api Discount Error.");
+      }
 
-    startPopsixle(checkoutId.split("?key=")[1]);
-    const attributesResponse = await addCustomAttributes(
-      [
-        {
-          key: "unique_checkout_id",
-          value: `${checkoutId.split("?key=")[1]}`,
-        },
-      ],
-      checkoutId,
-      lpParams.country
-    );
-    if (!attributesResponse.ok) throw new Error("Attributes Error.");
+      startPopsixle(checkoutId.split("?key=")[1]);
+      const attributesResponse = await addCustomAttributes(
+        [
+          {
+            key: "unique_checkout_id",
+            value: `${checkoutId.split("?key=")[1]}`,
+          },
+        ],
+        checkoutId,
+        lpParams.country
+      );
+      if (!attributesResponse.ok) throw new Error("Attributes Error.");
 
-    dataLayerRedirect(lpParams.dataLayer, data);
-    window.location.href = apiData.data.checkoutCreate.checkout.webUrl;
-    return true;
-  } catch (error) {
-    alert("There was a problem. Please try again later.");
-    return Promise.reject(error);
+      dataLayerRedirect(lpParams.dataLayer, data);
+      window.location.href = apiData.data.checkoutCreate.checkout.webUrl;
+      return true;
+    } catch (error) {
+      alert("There was a problem. Please try again later.");
+      return Promise.reject(error);
+    }
   }
 };
 
