@@ -185,6 +185,10 @@ const buy = async (data, btnDiscount, lpParams, noCart = undefined) => {
           key: "unique_checkout_id",
           value: `${checkoutId.split("?key=")[1]}`,
         },
+        {
+          key: "gclid",
+          value: `${urlParams.get("gclid")}`,
+        },
       ],
       checkoutId,
       lpParams.country
