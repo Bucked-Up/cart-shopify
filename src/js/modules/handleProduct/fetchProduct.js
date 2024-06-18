@@ -5,6 +5,17 @@ const filterVariants = (data, products, isOrderBump) => {
   const isNotAvailable = (variant) => variant.node.availableForSale === false;
   const isAvailable = (variant) => variant.node.availableForSale === true;
 
+  for (let key in products) {
+    if (!key.includes("-")) continue;
+    const keySplitted = key.split("-");
+    for (let prodData of data) {
+      if (prodData.id.includes(keySplitted[0])) {
+        prodData.id = `${prodData.id}-${keySplitted[1]}`;
+        break;
+      }
+    }
+  }
+
   ids.forEach((id) => {
     const prod = data.find((prod) => prod.id.includes(id));
     const currentProduct = products[id];
@@ -18,6 +29,7 @@ const filterVariants = (data, products, isOrderBump) => {
       if (currentProduct.title) prod.title = currentProduct.title;
       if (currentProduct.hasQtty) prod.hasQtty = hasQtty;
       if (currentProduct.oneCard) prod.oneCard = true;
+      if (currentProduct.noPriceUp) prod.noPriceUp = true;
       if (currentProduct.variants)
         prod.variants.edges = prod.variants.edges.filter((filteredVariant) =>
           currentProduct.variants.includes(+filteredVariant.node.id.split("ProductVariant/")[1])
@@ -108,12 +120,13 @@ const fetchProduct = async ({ products, isOrderBump = false, country }) => {
         prod.variants[key].title = prod.variants[key].title.split("(")[0];
         if (+prod.variants[key].price.amount < minPrice) minPrice = prod.variants[key].price.amount;
       }
-      for (let key in prod.variants) {
-        if (+prod.variants[key].price.amount > minPrice) {
-          const string = ` (+$${(prod.variants[key].price.amount - minPrice).toFixed(2)})`;
-          prod.variants[key].title = prod.variants[key].title + string;
+      if (!prod.noPriceUp)
+        for (let key in prod.variants) {
+          if (+prod.variants[key].price.amount > minPrice) {
+            const string = ` (+$${(prod.variants[key].price.amount - minPrice).toFixed(2)})`;
+            prod.variants[key].title = prod.variants[key].title + string;
+          }
         }
-      }
     });
     return data;
   } catch (error) {

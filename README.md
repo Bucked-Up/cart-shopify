@@ -61,6 +61,7 @@ You can have a increse orderBump that changes the qtty of the products in the ca
 ```
 
 product can have the following boolean properties:
+
 - oneCard
 - isWhole
 
@@ -72,7 +73,16 @@ You can add a hasQtty property to the bump, as well as the cart itself.
 
 You can add a variantOf property to a product.
 
+You can add a noPriceUp property to a product.
+
 You can add a variants property to a product.
+
+You can add the same product with different options by differentiating it with a "-sonething"
+ex:
+```
+  999: {},
+  "999-2": { oneCard: true, title: "Babe Pre-Workout or LFG", noPriceUp: true },
+```
 
 ```
 products: {
@@ -89,6 +99,7 @@ variantsOptions: {
 ```
 
 You can add how much you want from the product depending on the button, the discountCode and the products you want from the specific button. Ex:
+
 ```
 buttons: {
   "BTN-1": {
@@ -105,5 +116,3 @@ buttons: {
 ## How to compile scss
 
 ### either install the compiler from the sass website, or install the vscode extension live sass compiler.
-
-
