@@ -27,11 +27,11 @@ const filterVariants = (data, products, isOrderBump) => {
         prod.variants.edges.forEach((variant) => {
           mainProd.variants.edges.push(variant);
         });
-        for (let i = 0; i < data.length; i++)
-          if (data[i].id === prod.id) {
-            data.splice(i, 1);
-            break;
-          }
+        // for (let i = 0; i < data.length; i++)
+        //   if (data[i].id === prod.id) {
+        //     data.splice(i, 1);
+        //     break;
+        //   }
       }
       if (currentProduct.isWhole) {
         prod.availableForSale = prod.variants.edges.every(isAvailable);

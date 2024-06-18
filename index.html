@@ -29,28 +29,50 @@
 <script type="module">
   import shopifyApiCode from "./src/js/scripts.js"
   shopifyApiCode({
+    noCart: false,
     country: "us",
     dataLayer: {
       step_count: "",
-      page_id: "KSFB3",
-      version_id: "KSFB3",
+      page_id: "",
+      version_id: "",
     },
     products: {
-      9037941342514: {},
-      9123402547506: {},
-      8685143195954: {},
-    },
-    bump: {
-      products: {
-        // 8685143195954: {},
-        8858113868082: {},
-      },
-      price: 4.95,
-      discountCode: "KSUPGRADE",
+      8858113114418: {},
+      8768929923378: {},
+      8685144408370: { oneCard: true, title: "LFG or Babe Pre-Workout" },
+      8858114097458: {},
+      9472526483762: {},
+      9472518226226: {},
+      9472494731570: {},
+      8768929923378: { variantOf: 8685144408370 },
     },
     buttons: {
-      "btn-1": {},
+      "btn-1": {
+        products: {
+          8858113114418: {},
+          8768929923378: {},
+          8858114097458: {},
+          9472518226226: {},
+        },
+        discountCode: "2crea",
+      },
+      "btn-2": {
+        products: {
+          8858113114418: { quantity: 2 },
+          8685144408370: { quantity: 2 },
+          8858114097458: {},
+          9472518226226: {},
+        },
+        discountCode: "4crea",
+      },
+      "btn-3": {
+        products: {
+          8858113114418: {},
+          9472494731570: {},
+        },
+        discountCode: "1crea"
+      },
     },
-    discountCode: "KSFB3",
+    discountCode: "",
   });
 </script>
