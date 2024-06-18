@@ -192,7 +192,7 @@ const buy = async (data, btnDiscount, lpParams, noCart = undefined) => {
     if (!attributesResponse.ok) throw new Error("Attributes Error.");
 
     dataLayerRedirect(lpParams.dataLayer, data);
-    window.location.href = apiData.data.checkoutCreate.checkout.webUrl;
+    window.location.href = `${apiData.data.checkoutCreate.checkout.webUrl}&${urlParams}`;
     return true;
   } catch (error) {
     alert("There was a problem. Please try again later.");
