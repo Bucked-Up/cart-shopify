@@ -187,7 +187,7 @@ const buy = async (data, btnDiscount, lpParams, noCart = undefined) => {
         },
         {
           key: "gclid",
-          value: `${urlParams.get("gclid")}`,
+          value: `gclid=${urlParams.get("gclid")}`,
         },
       ],
       checkoutId,
