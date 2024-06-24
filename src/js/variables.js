@@ -42,4 +42,4 @@ const handleFetch = async ({ body, country }) => {
   return response;
 };
 
-export { handleFetch };
+export { handleFetch, getAccessToken };

@@ -3,11 +3,12 @@ import toggleLoading from "./modules/toggleLoading.js";
 import { dataLayerStart } from "./modules/dataLayer.js";
 import { createCart } from "./modules/handleCart.js";
 import buy from "./modules/buy.js";
+import handleCookieBanner from "./modules/handleCookieBanner.js";
 
 const shopifyApiCode = async (lpParams) => {
   window.addEventListener("pageshow", function (event) {
     if (event.persisted) {
-      document.body.classList.remove("loading")
+      document.body.classList.remove("loading");
     }
   });
   toggleLoading();
@@ -63,6 +64,7 @@ const shopifyApiCode = async (lpParams) => {
     });
   }
   toggleLoading();
+  handleCookieBanner(lpParams.country);
 };
 
 export default shopifyApiCode;
