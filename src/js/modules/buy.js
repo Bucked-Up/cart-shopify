@@ -101,6 +101,16 @@ const startPopsixle = (id) => {
   }
 };
 
+const getEfTid = () => {
+  try {
+    const eftid = EF.getTransactionId(EF.urlParameter("oid"));
+    return eftid || null;
+  } catch (e) {
+    console.warn("Failed to get eftid", e);
+    return null;
+  }
+};
+
 const buy = async (data, btnDiscount, lpParams, noCart = undefined) => {
   const urlParams = new URLSearchParams(window.location.search);
   const variantId = [];
@@ -188,6 +198,10 @@ const buy = async (data, btnDiscount, lpParams, noCart = undefined) => {
         {
           key: "gclid",
           value: `gclid=${urlParams.get("gclid")}`,
+        },
+        {
+          key: "eftid",
+          value: `eftid=${getEfTid()}`,
         },
       ],
       checkoutId,
