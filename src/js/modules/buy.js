@@ -179,6 +179,22 @@ const buy = async (data, btnDiscount, lpParams, noCart = undefined) => {
     }
 
     startPopsixle(checkoutId.split("?key=")[1]);
+    const getClickIds = () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const paramsObject = {};
+      const allowedParams = ["gclid", "fbclid", "sccid", "ttclid", "twclid"];
+      for (let [key, value] of urlParams) {
+        if (allowedParams.includes(key)) {
+          if (!paramsObject[key]) {
+            paramsObject[key] = [];
+          }
+          paramsObject[key].push(value);
+        }
+      }
+      const paramsArray = Object.entries(paramsObject).map(([key, values]) => (values.length > 1 ? `${key}=[${values.join(" , ")}]` : `${key}=${values[0]}`));
+      const string = paramsArray.join(" , ");
+      return string
+    };
     const attributesResponse = await addCustomAttributes(
       [
         {
@@ -186,8 +202,12 @@ const buy = async (data, btnDiscount, lpParams, noCart = undefined) => {
           value: `${checkoutId.split("?key=")[1]}`,
         },
         {
-          key: "gclid",
-          value: `gclid=${urlParams.get("gclid")}`,
+          key: "click_ids",
+          value: getClickIds(),
+        },
+        {
+          key: "source_url",
+          value: window.location.href,
         },
       ],
       checkoutId,
