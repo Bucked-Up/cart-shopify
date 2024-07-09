@@ -180,9 +180,8 @@ const buy = async (data, btnDiscount, lpParams, noCart = undefined) => {
 
     startPopsixle(checkoutId.split("?key=")[1]);
     const getClickIds = () => {
-      const urlParams = new URLSearchParams(window.location.search);
       const paramsObject = {};
-      const allowedParams = ["gclid", "fbclid", "sccid", "ttclid", "twclid"];
+      const allowedParams = ["gclid", "fbclid", "fbc", "sccid", "ttclid", "twclid"];
       for (let [key, value] of urlParams) {
         if (allowedParams.includes(key)) {
           if (!paramsObject[key]) {
