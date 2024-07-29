@@ -359,14 +359,16 @@ const createProduct = ({ prod, isVariant, isOrderBump, orderBumpsContainer, inCa
   let prevProdWrapper;
   if (prod !== "increase") prevProdWrapper = document.querySelector(`[prod-id="${prod.id.split("id")[0]}"]`);
   let selectionDiv = undefined;
-  if (prod.oneCard && !prevProdWrapper) {
-    selectionDiv = createPlaceholders({
-      prod,
-      selectionDiv,
-    });
-  } else if (prod.oneCard) {
-    increasePlaceholders(prevProdWrapper);
-    return undefined;
+  if(prod.oneCard && !prod.isWhole){
+    if (prod.oneCard && !prevProdWrapper) {
+      selectionDiv = createPlaceholders({
+        prod,
+        selectionDiv,
+      });
+    } else if (prod.oneCard) {
+      increasePlaceholders(prevProdWrapper);
+      return undefined;
+    }
   }
 
   const productWrapper = document.createElement("div");
@@ -394,11 +396,20 @@ const createProduct = ({ prod, isVariant, isOrderBump, orderBumpsContainer, inCa
   }
 
   let img = undefined;
-  if (!prod.oneCard) {
+  if (!prod.oneCard || (prod.oneCard && prod.isWhole)) {
     const imgWrapper = document.createElement("div");
     imgWrapper.classList.add("cart__product__img-wrapper");
     img = document.createElement("img");
-    if (isVariant) {
+    if(prod.oneCard && prod.isWhole){
+      img.src = lpParams.products[prod.id].image;
+      img.alt = lpParams.products[prod.id].title;
+      prod.variants.forEach(variant=>{
+        const variantId = variant.id.split("ProductVariant/")[1]
+        const variantQuantity = lpParams.products[prod.id].variantsOptions[variantId]?.quantity
+        if(variantQuantity) productWrapper.setAttribute(`variant-qtty-${variantId}`,variantQuantity)
+      })
+    }
+    else if (isVariant) {
       img.src = prod.image.src;
       img.alt = prod.title;
     } else {
@@ -534,7 +545,7 @@ const createCart = (data, orderBumpData, lpParams) => {
     buyButton = replaceElement(buyButton);
     data.forEach((prod) => {
       const quantity = (btnProducts && btnProducts[prod.id]?.quantity) || lpParams.products[prod.id]?.quantity;
-      if (prod.isWhole) {
+      if (prod.isWhole && !prod.oneCard) {
         prod.variants.forEach((variant) => {
           const variantsOptions = lpParams.products[prod.id]?.variantsOptions
           const variantQuantity = variantsOptions && variantsOptions[variant.id.split("ProductVariant/")[1]]?.quantity

@@ -65,6 +65,8 @@ product can have the following boolean properties:
 - oneCard
 - isWhole
 
+If it has both, it will need image and title as well.
+
 You can add a title property to a product.
 
 You can add a quantity property to a product.

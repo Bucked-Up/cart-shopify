@@ -111,7 +111,11 @@ const buy = async (data, btnDiscount, lpParams, noCart = undefined) => {
     if (product.isWhole) {
       variantId.push(
         ...product.variants.map((variant) => {
-          const variantQuantity = inputQtty * (+document.getElementById(`${variant.id}-quantity`)?.innerHTML || 1);
+          const prodContainer = document.querySelector(`[prod-id="${product.id.split("id")[0]}"]`);
+          const initialQuantity =
+            +document.getElementById(`${variant.id}-quantity`)?.innerHTML ||
+            prodContainer?.getAttribute(`variant-qtty-${variant.id.split("ProductVariant/")[1]}`);
+          const variantQuantity = inputQtty * (initialQuantity || 1);
           return { id: variant.id, quantity: variantQuantity };
         })
       );
@@ -192,7 +196,7 @@ const buy = async (data, btnDiscount, lpParams, noCart = undefined) => {
       }
       const paramsArray = Object.entries(paramsObject).map(([key, values]) => (values.length > 1 ? `${key}=[${values.join(" , ")}]` : `${key}=${values[0]}`));
       const string = paramsArray.join(" , ");
-      return string
+      return string;
     };
     const attributesResponse = await addCustomAttributes(
       [
