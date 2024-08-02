@@ -17,7 +17,6 @@ const fetchProductBen = async ({ products, country, isOrderBump }) => {
       const isNormalProduct = Object.hasOwn(prod.options[0].values[0], "in_stock");
       const currentProd = products[prod.id];
       if (!isNormalProduct) {
-        console.log(prod);
         if (Object.values(prod.stock).every((val) => val <= 0)) {
           console.warn("Out of stock: ", prod.id);
           data.noStock = true;
@@ -121,7 +120,6 @@ const fetchProductBen = async ({ products, country, isOrderBump }) => {
   };
   const ids = Object.keys(products);
   const data = await getBenProducts({ ids: ids, country: country });
-  console.log(convertData(data));
   return convertData(data);
 };
 

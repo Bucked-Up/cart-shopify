@@ -114,7 +114,7 @@ const buy = async (data, btnDiscount, lpParams, noCart = undefined) => {
           const prodContainer = document.querySelector(`[prod-id="${product.id.split("id")[0]}"]`);
           const initialQuantity =
             +document.getElementById(`${variant.id}-quantity`)?.innerHTML ||
-            prodContainer?.getAttribute(`variant-qtty-${variant.id.split("ProductVariant/")[1]}`);
+            prodContainer?.getAttribute(`variant-qtty-${(variant.id.split("ProductVariant/")[1] || variant.id.split("option")[0])}`);
           const variantQuantity = inputQtty * (initialQuantity || 1);
           return { id: variant.id, quantity: variantQuantity, prod: product };
         })
@@ -140,7 +140,6 @@ const buy = async (data, btnDiscount, lpParams, noCart = undefined) => {
   if ("isBenSys" in lpParams) {
     let string = "";
     variantId.forEach((variant, i) => {
-      // if (string.includes(variant.prod.id.split("id")[0].split("ob")[0])) i = i - 1;
       if (variant.isBenSysShirt) {
         string =
           string +

@@ -404,9 +404,12 @@ const createProduct = ({ prod, isVariant, isOrderBump, orderBumpsContainer, inCa
       img.src = lpParams.products[prod.id].image;
       img.alt = lpParams.products[prod.id].title;
       prod.variants.forEach(variant=>{
-        const variantId = variant.id.split("ProductVariant/")[1]
-        const variantQuantity = lpParams.products[prod.id].variantsOptions[variantId]?.quantity
-        if(variantQuantity) productWrapper.setAttribute(`variant-qtty-${variantId}`,variantQuantity)
+        const variantId = variant.id.split("ProductVariant/")[1] || variant.id.split("option")[0]
+        const variantsOptions = lpParams.products[prod.id].variantsOptions
+        if(variantsOptions){
+          const variantQuantity = variantsOptions[variantId]?.quantity
+          if(variantQuantity) productWrapper.setAttribute(`variant-qtty-${variantId}`,variantQuantity)
+        }
       })
     }
     else if (isVariant) {
@@ -548,7 +551,13 @@ const createCart = (data, orderBumpData, lpParams) => {
       if (prod.isWhole && !prod.oneCard) {
         prod.variants.forEach((variant) => {
           const variantsOptions = lpParams.products[prod.id]?.variantsOptions || false
-          const variantQuantity = (variantsOptions && variant.id.includes("ProductVariant/")) ? variantsOptions[variant.id.split("ProductVariant/")[1]]?.quantity : variantsOptions[variant.id]?.quantity
+          let variantQuantity;
+          if(variantsOptions && variant.id.includes("ProductVariant/"))
+            variantQuantity = variantsOptions[variant.id.split("ProductVariant/")[1]]?.quantity;
+          else if(variantsOptions && variant.id.includes("option"))
+            variantQuantity = variantsOptions[variant.id.split("option")[0]]?.quantity;
+          else if(variantsOptions)
+            variantQuantity = variantsOptions[variant.id]?.quantity
           inCartContainer.appendChild(createProduct({ prod: variant, lpParams, isVariant: { title: prod.title, id: variant.id }, quantity: variantQuantity || quantity, data }));
         });
       } else {

@@ -42,6 +42,8 @@
 </script>
 ```
 
+You can use the Ecomm instead of shopify by adding "isBenSys: {},".
+
 You can add more than one discountCode by using "-".
 
 ex: "code1-code2"
@@ -79,7 +81,7 @@ You can add a noPriceUp property to a product.
 
 You can add a variants property to a product.
 
-You can add the same product with different options by differentiating it with a "-sonething"
+SHOPIFY You can add the same product with different options by differentiating it with a "-sonething"
 ex:
 ```
   999: {},
