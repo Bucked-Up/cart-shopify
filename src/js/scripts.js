@@ -3,6 +3,7 @@ import toggleLoading from "./modules/toggleLoading.js";
 import { dataLayerStart } from "./modules/dataLayer.js";
 import { createCart } from "./modules/handleCart.js";
 import buy from "./modules/buy.js";
+import fetchProductBen from "./modules/handleProduct/fetchProductBen.js";
 
 const shopifyApiCode = async (lpParams) => {
   window.addEventListener("pageshow", function (event) {
@@ -11,17 +12,23 @@ const shopifyApiCode = async (lpParams) => {
     }
   });
   toggleLoading();
-  const [data, orderBumpData] = await Promise.all([
-    fetchProduct({ products: lpParams.products, country: lpParams.country }),
-    lpParams.bump && fetchProduct({ products: lpParams.bump.products, isOrderBump: true, country: lpParams.country }),
-  ]);
-  dataLayerStart(lpParams.dataLayer, data, lpParams.discountCode);
+  const isBenSys = "isBenSys" in lpParams;
+  const [data, orderBumpData] = isBenSys
+    ? await Promise.all([
+        fetchProductBen({ products: lpParams.products, country: lpParams.country }),
+        lpParams.bump && fetchProductBen({ products: lpParams.bump.products, isOrderBump: true, country: lpParams.country }),
+      ])
+    : await Promise.all([
+        fetchProduct({ products: lpParams.products, country: lpParams.country }),
+        lpParams.bump && fetchProduct({ products: lpParams.bump.products, isOrderBump: true, country: lpParams.country }),
+      ]);
   const noStock = (el) => !el.availableForSale;
   if (data.some(noStock)) {
     alert("Product not found.");
     window.location.href = "https://buckedup.com";
     return;
   }
+  dataLayerStart(lpParams.dataLayer, data, lpParams.discountCode);
   const buttons = Object.keys(lpParams.buttons).map((id) => document.getElementById(id));
   if (lpParams.noCart) {
     buttons.forEach((btn) => {
@@ -56,9 +63,7 @@ const shopifyApiCode = async (lpParams) => {
           }
         });
         btnData = increasedData;
-        // if (!btn.hasAttribute("disabled")) {
         updateCartProducts(btnData, lpParams.buttons[btn.id].discountCode, btnProducts, lpParams);
-        // }
       });
     });
   }
