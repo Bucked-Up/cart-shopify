@@ -44,7 +44,7 @@
 
 You can use the Ecomm instead of shopify by adding "isBenSys: {},".
 
-You can add more than one discountCode by using "-".
+SHOPIFY You can add more than one discountCode by using "-".
 
 ex: "code1-code2"
 
@@ -75,9 +75,9 @@ You can add a quantity property to a product.
 
 You can add a hasQtty property to the bump, as well as the cart itself.
 
-You can add a variantOf property to a product.
+SHOPIFY You can add a variantOf property to a product.
 
-You can add a noPriceUp property to a product.
+SHOPIFY You can add a noPriceUp property to a product.
 
 You can add a variants property to a product.
 

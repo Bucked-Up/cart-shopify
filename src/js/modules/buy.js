@@ -156,6 +156,7 @@ const buy = async (data, btnDiscount, lpParams, noCart = undefined) => {
       }
     });
     dataLayerRedirect(lpParams.dataLayer, data);
+    urlParams.set("cc", lpParams.discountCode || urlParams.get("discount"))
     window.location.href = `https://${
       lpParams.country && lpParams.country !== "us" ? lpParams.country + "." : ""
     }buckedup.com/cart/add?${string}&clear=true&${urlParams}`;
