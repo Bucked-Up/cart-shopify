@@ -112,7 +112,7 @@ const buy = async (data, btnDiscount, lpParams, noCart = undefined) => {
       variantId.push(
         ...product.variants.map((variant) => {
           const variantQuantity = inputQtty * (+document.getElementById(`${variant.id}-quantity`)?.innerHTML || 1);
-          return { id: variant.id, quantity: variantQuantity };
+          return { id: variant.id, quantity: variantQuantity, prod: product };
         })
       );
     } else if (product.variants.length > 1 && !noCart) {
@@ -122,8 +122,8 @@ const buy = async (data, btnDiscount, lpParams, noCart = undefined) => {
         if (selectedVariant.wrapper) selectedVariant.wrapper.classList.add("shake");
         return false;
       }
-      variantId.push({ id: selectedVariant.result, quantity });
-    } else variantId.push({ id: product.variants[0].id, quantity: lpParams.noCart ? product.quantity : quantity });
+      variantId.push({ id: selectedVariant.result, quantity, isBenSysShirt: product.isBenSys, prod: product });
+    } else variantId.push({ id: product.variants[0].id, quantity: lpParams.noCart ? product.quantity : quantity, prod: product });
   }
 
   toggleLoading();
@@ -133,6 +133,30 @@ const buy = async (data, btnDiscount, lpParams, noCart = undefined) => {
   const obj = variantId.map((variant) => {
     return { variantId: variant.id, quantity: globalQuantity * variant.quantity };
   });
+  if ("isBenSys" in lpParams) {
+    let string = "";
+    variantId.forEach((variant, i) => {
+      // if (string.includes(variant.prod.id.split("id")[0].split("ob")[0])) i = i - 1;
+      if (variant.isBenSysShirt) {
+        string =
+          string +
+          `&products[${i}][id]=${variant.prod.id.split("id")[0].split("ob")[0]}&products[${i}][quantity]=${variant.quantity}&products[${i}][options][${
+            variant.prod.options[0].id
+          }]=${variant.id.split("-")[0]}&products[${i}][id]=${variant.prod.id.split("id")[0].split("ob")[0]}&products[${i}][quantity]=${
+            variant.quantity
+          }&products[${i}][options][${variant.prod.options[1].id}]=${variant.id.split("-")[1]}`;
+      } else {
+        const [variantId, optionID] = variant.id.split("option");
+        string =
+          string +
+          `&products[${i}][id]=${variant.prod.id.split("id")[0].split("ob")[0]}&products[${i}][quantity]=${variant.quantity}&products[${i}][options][${optionID}]=${variantId}`;
+      }
+    });
+    dataLayerRedirect(lpParams.dataLayer, data);
+    window.location.href = `https://${
+      lpParams.country && lpParams.country !== "us" ? lpParams.country + "." : ""
+    }buckedup.com/cart/add?${string}&clear=true&${urlParams}`;
+  } else {
   const input = {
     input: {
       lineItems: [...obj],
@@ -197,6 +221,7 @@ const buy = async (data, btnDiscount, lpParams, noCart = undefined) => {
   } catch (error) {
     alert("There was a problem. Please try again later.");
     return Promise.reject(error);
+    }
   }
 };
 
