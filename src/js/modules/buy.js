@@ -2,30 +2,39 @@ import toggleLoading from "./toggleLoading.js";
 import { dataLayerRedirect } from "./dataLayer.js";
 import { handleFetch } from "../variables.js";
 
-const getVariantId = (data) => {
-  const primaryWrapper = document.querySelector(`[primary="${data.id}"]`);
+const getVariantId = (product, oneCardQuantity) => {
+  const primaryWrapper = document.querySelector(`[primary="${product.id}"]`);
   if (primaryWrapper) {
-    const secondaryWrapper = document.querySelector(`[secondary="${data.id}"]`);
+    const secondaryWrapper = document.querySelector(`[secondary="${product.id}"]`);
     const primary = primaryWrapper.querySelector("input:checked");
     const secondary = secondaryWrapper.querySelector("input:checked");
     if (!secondary) return { result: false, wrapper: secondaryWrapper, message: "Select your size." };
-    return { result: data.variants.find((variant) => variant.title.includes(primary.value) && variant.title.includes(secondary.value)).id };
-  } else if (data.oneCard) {
-    const prodContainer = document.querySelector(`[prod-id="${data.id.split("id")[0]}"]`);
+    return { result: product.variants.find((variant) => variant.title.includes(primary.value) && variant.title.includes(secondary.value)).id };
+  } else if (product.oneCard && !product.isWhole) {
+    const prodContainer = document.querySelector(`[prod-id="${product.id.split("id")[0]}"]`);
     const choicesContainer = prodContainer.querySelector(".cart__placeholders");
     const variantsContainer = prodContainer.querySelector(".cart__variant-selection__container");
-    const button = choicesContainer.querySelector("button:not([variantGot])");
-    if (!button) {
+    const values = Array.from(choicesContainer.querySelectorAll("button")).map(button=>button.value);
+    if(values.length < oneCardQuantity){
       variantsContainer.classList.add("shake");
       choicesContainer.querySelectorAll("button").forEach((button) => {
         button.removeAttribute("variantGot");
       });
       return { result: false, wrapper: variantsContainer, message: "Select your variants." };
     }
-    button.setAttribute("variantGot", "");
-    return { result: button.value };
+    const uniqueArray = [];
+    values.forEach(id => {
+      const existing = uniqueArray.find(item => item.result === id);
+      if (existing) {
+        existing.quantity += 1;
+      } else {
+        uniqueArray.push({ result: id, quantity: 1 });
+      }
+    });
+    console.log(uniqueArray)
+    return uniqueArray
   } else {
-    const input = document.querySelector(`[name="${data.id}"]:checked`);
+    const input = document.querySelector(`[name="${product.id}"]:checked`);
     if (!input) return { result: false, wrapper: false, message: "Sorry, there was a problem." };
     return { result: input.value };
   }
@@ -104,30 +113,50 @@ const startPopsixle = (id) => {
 const buy = async (data, btnDiscount, lpParams, noCart = undefined) => {
   const urlParams = new URLSearchParams(window.location.search);
   const variantId = [];
-  for (let product of data) {
-    const inputQtty = +document.getElementById(`qtty-input-${product.id}`)?.value || 1;
-    const prodQtty = +document.getElementById(`${product.id}-quantity`)?.innerHTML || 1;
-    let quantity = inputQtty * prodQtty;
-    if (product.isWhole) {
-      variantId.push(
-        ...product.variants.map((variant) => {
-          const prodContainer = document.querySelector(`[prod-id="${product.id.split("id")[0]}"]`);
-          const initialQuantity =
-            +document.getElementById(`${variant.id}-quantity`)?.innerHTML ||
-            prodContainer?.getAttribute(`variant-qtty-${(variant.id.split("ProductVariant/")[1] || variant.id.split("option")[0])}`);
-          const variantQuantity = inputQtty * (initialQuantity || 1);
-          return { id: variant.id, quantity: variantQuantity, prod: product };
-        })
-      );
-    } else if (product.variants.length > 1 && !noCart) {
-      const selectedVariant = getVariantId(product);
-      if (!selectedVariant.result) {
-        alert(selectedVariant.message);
-        if (selectedVariant.wrapper) selectedVariant.wrapper.classList.add("shake");
-        return false;
+
+  const seenOneCardIds = new Set();
+  for (let i = data.length - 1; i >= 0; i--) {
+    if (data[i].oneCard && !data[i].isWhole) {
+      if (seenOneCardIds.has(data[i].id.split("id")[0])) {
+        data.splice(i, 1);
+      } else {
+        seenOneCardIds.add(data[i].id.split("id")[0]);
       }
-      variantId.push({ id: selectedVariant.result, quantity, isBenSysShirt: product.isBenSys, prod: product });
-    } else variantId.push({ id: product.variants[0].id, quantity: lpParams.noCart ? product.quantity : quantity, prod: product });
+    }
+  }
+
+  for (let product of data) {
+    if(product.oneCard && !product.isWhole){
+      const selectedVariant = getVariantId(product,lpParams.products[product.id.split("id")[0]].quantity);
+      selectedVariant.forEach(variant=>{
+        variantId.push({ id: variant.result, quantity: variant.quantity, prod: product });
+      })
+    }
+    else{
+      const inputQtty = +document.getElementById(`qtty-input-${product.id}`)?.value || 1;
+      const prodQtty = +document.getElementById(`${product.id}-quantity`)?.innerHTML || 1;
+      let quantity = inputQtty * prodQtty;
+      if (product.isWhole) {
+        variantId.push(
+          ...product.variants.map((variant) => {
+            const prodContainer = document.querySelector(`[prod-id="${product.id.split("id")[0]}"]`);
+            const initialQuantity =
+              +document.getElementById(`${variant.id}-quantity`)?.innerHTML ||
+              prodContainer?.getAttribute(`variant-qtty-${(variant.id.split("ProductVariant/")[1] || variant.id.split("option")[0])}`);
+            const variantQuantity = inputQtty * (initialQuantity || 1);
+            return { id: variant.id, quantity: variantQuantity, prod: product };
+          })
+        );
+      } else if (product.variants.length > 1 && !noCart) {
+        const selectedVariant = getVariantId(product);
+        if (!selectedVariant.result) {
+          alert(selectedVariant.message);
+          if (selectedVariant.wrapper) selectedVariant.wrapper.classList.add("shake");
+          return false;
+        }
+        variantId.push({ id: selectedVariant.result, quantity, prod: product });
+      } else variantId.push({ id: product.variants[0].id, quantity: lpParams.noCart ? product.quantity : quantity, prod: product });
+    }
   }
 
   toggleLoading();
@@ -140,7 +169,7 @@ const buy = async (data, btnDiscount, lpParams, noCart = undefined) => {
   if ("isBenSys" in lpParams) {
     let string = "";
     variantId.forEach((variant, i) => {
-      if (variant.isBenSysShirt) {
+      if (variant.prod.isBenSysShirt) {
         string =
           string +
           `&products[${i}][id]=${variant.prod.id.split("id")[0].split("ob")[0]}&products[${i}][quantity]=${variant.quantity}&products[${i}][options][${

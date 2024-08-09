@@ -44,7 +44,7 @@ const fetchProductBen = async ({ products, country, isOrderBump }) => {
         newProd.variants = [];
         newProd.oneCard = currentProd.oneCard;
         newProd.hasQtty = currentProd.hasQtty;
-        newProd.isBenSys = true;
+        newProd.isBenSysShirt = true;
         prod.options.forEach((option) => {
           newProd.options.push({
             id: option.id,

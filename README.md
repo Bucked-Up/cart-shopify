@@ -50,7 +50,7 @@ ex: "code1-code2"
 
 You can use a discount param on the url instead of the discountCode.
 
-You can have a increse orderBump that changes the qtty of the products in the card.
+SHOPIFY (needs to see how to add multiple discontCodes on the ecomm) You can have a increse orderBump that changes the qtty of the products in the card.
 
 ```
   bump: {
