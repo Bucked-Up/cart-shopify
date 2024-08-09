@@ -105,9 +105,9 @@ const handleComplexProduct = ({ prod, productInfo, img }) => {
     return false;
   });
 
-  const initialVariant = prod.variants.find(variant=>variant.title.includes(primaryOption.values[0]))
-  img.src = initialVariant.image.src
-  img.alt = initialVariant.title
+  const initialVariant = prod.variants.find((variant) => variant.title.includes(primaryOption.values[0]));
+  img.src = initialVariant.image.src;
+  img.alt = initialVariant.title;
 
   const createBase = (text) => {
     const dropdown = createDropdown(text);
@@ -315,7 +315,7 @@ const createPlaceholders = ({ prod, selectionDiv }) => {
   return selectionDiv;
 };
 
-const createBumpAddButton = ({data, container, wrapper, inCartContainer, prod, price, lpParams }) => {
+const createBumpAddButton = ({ data, container, wrapper, inCartContainer, prod, price, lpParams }) => {
   const isMulti = prod.length > 1;
   const isIncrease = typeof prod === "string" && prod === "increase";
   const addButton = document.createElement("button");
@@ -359,7 +359,7 @@ const createProduct = ({ prod, isVariant, isOrderBump, orderBumpsContainer, inCa
   let prevProdWrapper;
   if (prod !== "increase") prevProdWrapper = document.querySelector(`[prod-id="${prod.id.split("id")[0]}"]`);
   let selectionDiv = undefined;
-  if(prod.oneCard && !prod.isWhole){
+  if (prod.oneCard && !prod.isWhole) {
     if (prod.oneCard && !prevProdWrapper) {
       selectionDiv = createPlaceholders({
         prod,
@@ -400,19 +400,18 @@ const createProduct = ({ prod, isVariant, isOrderBump, orderBumpsContainer, inCa
     const imgWrapper = document.createElement("div");
     imgWrapper.classList.add("cart__product__img-wrapper");
     img = document.createElement("img");
-    if(prod.oneCard && prod.isWhole){
+    if (prod.oneCard && prod.isWhole) {
       img.src = lpParams.products[prod.id].image;
       img.alt = lpParams.products[prod.id].title;
-      prod.variants.forEach(variant=>{
-        const variantId = variant.id.split("ProductVariant/")[1] || variant.id.split("option")[0]
-        const variantsOptions = lpParams.products[prod.id].variantsOptions
-        if(variantsOptions){
-          const variantQuantity = variantsOptions[variantId]?.quantity
-          if(variantQuantity) productWrapper.setAttribute(`variant-qtty-${variantId}`,variantQuantity)
+      prod.variants.forEach((variant) => {
+        const variantId = variant.id.split("ProductVariant/")[1] || variant.id.split("option")[0];
+        const variantsOptions = lpParams.products[prod.id].variantsOptions;
+        if (variantsOptions) {
+          const variantQuantity = variantsOptions[variantId]?.quantity;
+          if (variantQuantity) productWrapper.setAttribute(`variant-qtty-${variantId}`, variantQuantity);
         }
-      })
-    }
-    else if (isVariant) {
+      });
+    } else if (isVariant) {
       img.src = prod.image.src;
       img.alt = prod.title;
     } else {
@@ -439,11 +438,19 @@ const createProduct = ({ prod, isVariant, isOrderBump, orderBumpsContainer, inCa
     else if (!prod.oneCard) handleSimpleProduct({ prod, productInfo, img });
     else handleOneCardProduct({ prod, productInfo });
   }
-  const isMulti = isOrderBump && Object.keys(lpParams.bump.products).length > 1
+  const isMulti = isOrderBump && Object.keys(lpParams.bump.products).length > 1;
   if (isOrderBump && !isMulti) {
     const addWrapper = document.createElement("div");
     addWrapper.classList.add("add-wrapper");
-    const addButton = createBumpAddButton({data, container: orderBumpsContainer, wrapper: productWrapper, inCartContainer, prod, price: lpParams.bump.price, lpParams });
+    const addButton = createBumpAddButton({
+      data,
+      container: orderBumpsContainer,
+      wrapper: productWrapper,
+      inCartContainer,
+      prod,
+      price: lpParams.bump.price,
+      lpParams,
+    });
     addWrapper.appendChild(addButton);
     let qttyWrapper;
     if (lpParams.bump.hasQtty) {
@@ -535,10 +542,10 @@ const createCart = (data, orderBumpData, lpParams) => {
     return elClone;
   };
 
-  const createMultiBumpWrapper = ({data, container, inCartContainer, prod }) => {
+  const createMultiBumpWrapper = ({ data, container, inCartContainer, prod }) => {
     const multiBumpWrapper = document.createElement("div");
     multiBumpWrapper.classList.add("cart__order-bumps-container__multi-bump-wrapper");
-    const button = createBumpAddButton({data, container, wrapper: multiBumpWrapper, inCartContainer, prod, price: lpParams.bump.price });
+    const button = createBumpAddButton({ data, container, wrapper: multiBumpWrapper, inCartContainer, prod, price: lpParams.bump.price });
     return [multiBumpWrapper, button];
   };
 
@@ -550,15 +557,14 @@ const createCart = (data, orderBumpData, lpParams) => {
       const quantity = (btnProducts && btnProducts[prod.id]?.quantity) || lpParams.products[prod.id]?.quantity;
       if (prod.isWhole && !prod.oneCard) {
         prod.variants.forEach((variant) => {
-          const variantsOptions = lpParams.products[prod.id]?.variantsOptions || false
+          const variantsOptions = lpParams.products[prod.id]?.variantsOptions || false;
           let variantQuantity;
-          if(variantsOptions && variant.id.includes("ProductVariant/"))
-            variantQuantity = variantsOptions[variant.id.split("ProductVariant/")[1]]?.quantity;
-          else if(variantsOptions && variant.id.includes("option"))
-            variantQuantity = variantsOptions[variant.id.split("option")[0]]?.quantity;
-          else if(variantsOptions)
-            variantQuantity = variantsOptions[variant.id]?.quantity
-          inCartContainer.appendChild(createProduct({ prod: variant, lpParams, isVariant: { title: prod.title, id: variant.id }, quantity: variantQuantity || quantity, data }));
+          if (variantsOptions && variant.id.includes("ProductVariant/")) variantQuantity = variantsOptions[variant.id.split("ProductVariant/")[1]]?.quantity;
+          else if (variantsOptions && variant.id.includes("option")) variantQuantity = variantsOptions[variant.id.split("option")[0]]?.quantity;
+          else if (variantsOptions) variantQuantity = variantsOptions[variant.id]?.quantity;
+          inCartContainer.appendChild(
+            createProduct({ prod: variant, lpParams, isVariant: { title: prod.title, id: variant.id }, quantity: variantQuantity || quantity, data })
+          );
         });
       } else {
         const prodCard = createProduct({ prod, quantity, lpParams, data });
@@ -569,10 +575,12 @@ const createCart = (data, orderBumpData, lpParams) => {
       const [multiBumpWrapper, bumpButton] = createMultiBumpWrapper({ data, container: orderBumpsContainer, inCartContainer, prod: orderBumpData });
       orderBumpsContainer.appendChild(multiBumpWrapper);
       orderBumpData.forEach((prod) => {
-        multiBumpWrapper.appendChild(createProduct({ prod, lpParams, isOrderBump: true, lpParams, inCartContainer, orderBumpsContainer: multiBumpWrapper, data }));
+        multiBumpWrapper.appendChild(
+          createProduct({ prod, lpParams, isOrderBump: true, lpParams, inCartContainer, orderBumpsContainer: multiBumpWrapper, data })
+        );
       });
       multiBumpWrapper.appendChild(bumpButton);
-    } else if(orderBumpData)
+    } else if (orderBumpData)
       orderBumpData.forEach((prod) => {
         orderBumpsContainer.appendChild(createProduct({ prod, lpParams, isOrderBump: true, inCartContainer, orderBumpsContainer, data }));
       });

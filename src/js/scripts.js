@@ -8,7 +8,7 @@ import fetchProductBen from "./modules/handleProduct/fetchProductBen.js";
 const shopifyApiCode = async (lpParams) => {
   window.addEventListener("pageshow", function (event) {
     if (event.persisted) {
-      document.body.classList.remove("loading")
+      document.body.classList.remove("loading");
     }
   });
   toggleLoading();
