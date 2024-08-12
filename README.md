@@ -8,6 +8,14 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Bucked-Up/cart-shopify@2/src/scss/style.css">
 ```
 
+## 1.1 If it needs cookie banner, place this as well:
+
+```
+<script src="https://cdn.shopify.com/shopifycloud/consent-tracking-api/v0.1/consent-tracking-api.js?shpxid=35f6923e-D6D6-4F06-1E1C-CDEB0AF3238C"></script>
+<script src="https://cdn.shopify.com/shopifycloud/privacy-banner/storefront-banner.js?shpxid=35f6923e-D6D6-4F06-1E1C-CDEB0AF3238C"></script>
+
+```
+
 ### 2. Place this code and change as necessary into html/css footer
 
 ```

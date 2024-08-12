@@ -4,6 +4,7 @@ import { dataLayerStart } from "./modules/dataLayer.js";
 import { createCart } from "./modules/handleCart.js";
 import buy from "./modules/buy.js";
 import fetchProductBen from "./modules/handleProduct/fetchProductBen.js";
+import handleCookieBanner, { tryFbq } from "./modules/handleCookieBanner.js";
 
 const shopifyApiCode = async (lpParams) => {
   window.addEventListener("pageshow", function (event) {
@@ -13,6 +14,8 @@ const shopifyApiCode = async (lpParams) => {
   });
   toggleLoading();
   const isBenSys = "isBenSys" in lpParams;
+  if (lpParams.country === "uk") handleCookieBanner({ country: lpParams.country });
+  else tryFbq("grant");
   const [data, orderBumpData] = isBenSys
     ? await Promise.all([
         fetchProductBen({ products: lpParams.products, country: lpParams.country }),

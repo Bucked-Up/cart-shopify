@@ -62,4 +62,4 @@ const getBenProducts = async ({ ids, country }) => {
   return data.map((data) => data.product);
 };
 
-export { handleFetch, getBenProducts };
+export { handleFetch, getBenProducts, getAccessToken };
