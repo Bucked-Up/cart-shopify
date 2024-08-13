@@ -33,22 +33,25 @@ const shopifyApiCode = async (lpParams) => {
   }
   dataLayerStart(lpParams.dataLayer, data, lpParams.discountCode);
   const buttons = Object.keys(lpParams.buttons).map((id) => document.getElementById(id));
-  if (lpParams.noCart) {
-    buttons.forEach((btn) => {
-      btn.addEventListener("click", () => {
-        let btnData;
-        const btnProducts = lpParams.buttons[btn.id].products;
-        const filteredData = btnProducts ? data.filter((prod) => prod.id in btnProducts) : data;
-        filteredData.forEach((prod) => (prod.quantity = (btnProducts && btnProducts[prod.id].quantity) || lpParams.products[prod.id].quantity || 1));
-        btnData = filteredData;
-        // if (!btn.hasAttribute("disabled")) {
-        buy(btnData, lpParams.buttons[btn.id].discountCode, lpParams, true);
-        // }
-      });
+  const handleBtnNoCart = (btn) => {
+    btn.addEventListener("click", () => {
+      let btnData;
+      const btnProducts = lpParams.buttons[btn.id].products;
+      const filteredData = btnProducts ? data.filter((prod) => prod.id in btnProducts) : data;
+      filteredData.forEach((prod) => (prod.quantity = (btnProducts && btnProducts[prod.id].quantity) || lpParams.products[prod.id].quantity || 1));
+      btnData = filteredData;
+      buy(btnData, lpParams.buttons[btn.id].discountCode, lpParams, true);
     });
+  };
+  if (lpParams.noCart) {
+    buttons.forEach(handleBtnNoCart);
   } else {
     const updateCartProducts = createCart(data, orderBumpData?.some(noStock) && orderBumpData[0] !== "increase" ? undefined : orderBumpData, lpParams);
     buttons.forEach((btn) => {
+      if (lpParams.buttons[btn.id].noCart) {
+        handleBtnNoCart(btn);
+        return;
+      }
       btn.addEventListener("click", () => {
         let btnData;
         const btnProducts = lpParams.buttons[btn.id].products;

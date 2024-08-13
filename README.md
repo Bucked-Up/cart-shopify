@@ -110,6 +110,8 @@ variantsOptions: {
 }
 ```
 
+You can add a noCart option to a button.
+
 You can add how much you want from the product depending on the button, the discountCode and the products you want from the specific button. Ex:
 
 ```
