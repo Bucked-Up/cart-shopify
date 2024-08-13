@@ -31,7 +31,6 @@ const getVariantId = (product, oneCardQuantity) => {
         uniqueArray.push({ result: id, quantity: 1 });
       }
     });
-    console.log(uniqueArray);
     return uniqueArray;
   } else {
     const input = document.querySelector(`[name="${product.id}"]:checked`);
@@ -154,7 +153,7 @@ const buy = async (data, btnDiscount, lpParams, noCart = undefined) => {
           return false;
         }
         variantId.push({ id: selectedVariant.result, quantity, prod: product });
-      } else variantId.push({ id: product.variants[0].id, quantity: lpParams.noCart ? product.quantity : quantity, prod: product });
+      } else variantId.push({ id: product.variants[0].id, quantity: noCart ? product.quantity : quantity, prod: product });
     }
   }
 
