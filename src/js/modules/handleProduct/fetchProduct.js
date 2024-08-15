@@ -5,17 +5,6 @@ const filterVariants = (data, products, isOrderBump) => {
   const isNotAvailable = (variant) => variant.node.availableForSale === false;
   const isAvailable = (variant) => variant.node.availableForSale === true;
 
-  for (let key in products) {
-    if (!key.includes("-")) continue;
-    const keySplitted = key.split("-");
-    for (let prodData of data) {
-      if (prodData.id.includes(keySplitted[0])) {
-        prodData.id = `${prodData.id}-${keySplitted[1]}`;
-        break;
-      }
-    }
-  }
-
   ids.forEach((id) => {
     const prod = data.find((prod) => prod.id.includes(id));
     const currentProduct = products[id];
