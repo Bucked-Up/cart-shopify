@@ -20,6 +20,9 @@
     <button id="btn-2">2</button>
     <button id="btn-3">3</button>
     <button id="btn-4">4</button>
+    <div id="test"></div>
+    <hr>
+    <div id="test2"></div>
   </div>
 </body>
 
@@ -28,7 +31,7 @@
 <script type="module">
   import shopifyApiCode from "./src/js/scripts.js"
   shopifyApiCode({
-    noCart: false,
+    noCart: true,
     country: "us",
     dataLayer: {
       step_count: "",
@@ -36,7 +39,15 @@
       version_id: "",
     },
     products: {
-      8768929923378: { onPageSelect: true },
+      8768929923378: {
+        title: "Select your formula",
+        onPageSelect: {
+          wrappers: {
+            "btn-2": "test",
+            "btn-3": "test2"
+          }
+        }
+      },
       8858113114418: {},
       8858114097458: {},
       9472526483762: {},
@@ -62,7 +73,6 @@
         discountCode: "CLAIMCREATINE4",
       },
       "btn-1": {
-        noCart: true,
         products: {
           8858113114418: {},
           9472494731570: {},

@@ -16,6 +16,7 @@ const filterVariants = (data, products, isOrderBump) => {
     }
     if (Object.keys(products).length > 0) {
       if (currentProduct.title) prod.title = currentProduct.title;
+      if (currentProduct.onPageSelect) prod.onPageSelect = currentProduct.onPageSelect;
       if (currentProduct.hasQtty) prod.hasQtty = hasQtty;
       if (currentProduct.oneCard) prod.oneCard = true;
       if (currentProduct.noPriceUp) prod.noPriceUp = true;

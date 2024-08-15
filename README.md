@@ -87,6 +87,8 @@ SHOPIFY You can add a variantOf property to a product.
 
 SHOPIFY You can add a noPriceUp property to a product.
 
+SHOPIFY You can add a onPageSelect property to a product.
+
 You can add a variants property to a product.
 
 ```

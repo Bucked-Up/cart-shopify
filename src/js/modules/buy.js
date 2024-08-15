@@ -2,7 +2,7 @@ import toggleLoading from "./toggleLoading.js";
 import { dataLayerRedirect } from "./dataLayer.js";
 import { handleFetch } from "../variables.js";
 
-const getVariantId = (product, oneCardQuantity) => {
+const getVariantId = ({product, oneCardQuantity, btnId}) => {
   const primaryWrapper = document.querySelector(`[primary="${product.id}"]`);
   if (primaryWrapper) {
     const secondaryWrapper = document.querySelector(`[secondary="${product.id}"]`);
@@ -10,6 +10,11 @@ const getVariantId = (product, oneCardQuantity) => {
     const secondary = secondaryWrapper.querySelector("input:checked");
     if (!secondary) return { result: false, wrapper: secondaryWrapper, message: "Select your size." };
     return { result: product.variants.find((variant) => variant.title.includes(primary.value) && variant.title.includes(secondary.value)).id };
+  } else if (product.onPageSelect) {
+    const wrapper = document.querySelector(`#${product.onPageSelect.wrappers[btnId]} .cart__dropdown:has([name="${product.id}"])`)
+    const input = wrapper.querySelector(`[name="${product.id}"]:checked`);
+    if(!input) return { result: false, wrapper: wrapper, message: "Select your variants." };
+    return { result: input.value };
   } else if (product.oneCard && !product.isWhole) {
     const prodContainer = document.querySelector(`[prod-id="${product.id.split("id")[0]}"]`);
     const choicesContainer = prodContainer.querySelector(".cart__placeholders");
@@ -109,7 +114,7 @@ const startPopsixle = (id) => {
   }
 };
 
-const buy = async (data, btnDiscount, lpParams, noCart = undefined) => {
+const buy = async ({ data, btnDiscount, lpParams, noCart = undefined, btnId }) => {
   const urlParams = new URLSearchParams(window.location.search);
   const variantId = [];
 
@@ -126,7 +131,7 @@ const buy = async (data, btnDiscount, lpParams, noCart = undefined) => {
 
   for (let product of data) {
     if (product.oneCard && !product.isWhole) {
-      const selectedVariant = getVariantId(product, lpParams.products[product.id.split("id")[0]].quantity);
+      const selectedVariant = getVariantId({product, oneCartQuantity: lpParams.products[product.id.split("id")[0]].quantity});
       selectedVariant.forEach((variant) => {
         variantId.push({ id: variant.result, quantity: variant.quantity, prod: product });
       });
@@ -145,8 +150,8 @@ const buy = async (data, btnDiscount, lpParams, noCart = undefined) => {
             return { id: variant.id, quantity: variantQuantity, prod: product };
           })
         );
-      } else if (product.variants.length > 1 && !noCart) {
-        const selectedVariant = getVariantId(product);
+      } else if (product.onPageSelect || (product.variants.length > 1 && !noCart)) {
+        const selectedVariant = getVariantId({product, btnId});
         if (!selectedVariant.result) {
           alert(selectedVariant.message);
           if (selectedVariant.wrapper) selectedVariant.wrapper.classList.add("shake");

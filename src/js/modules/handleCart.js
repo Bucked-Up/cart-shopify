@@ -71,10 +71,10 @@ const createDropdown = (title) => {
   return dropdown;
 };
 
-const handleSimpleProduct = ({ prod, productInfo, img }) => {
+const handleSimpleProduct = ({ prod, productInfo, img, title }) => {
   let dropdown = undefined;
   const variantsWrapper = document.createElement("div");
-  dropdown = createDropdown(prod.variants[0].title);
+  dropdown = createDropdown(title || prod.variants[0].title);
   productInfo.appendChild(dropdown);
   variantsWrapper.classList.add("cart__dropdown__variants");
   prod.variants.forEach((variant) => {
@@ -85,10 +85,12 @@ const handleSimpleProduct = ({ prod, productInfo, img }) => {
       variantPrice: variant.price.amount,
     });
     variantsWrapper.appendChild(wrapper);
-    variantsWrapper.querySelector("input").checked = true;
+    if (!title) variantsWrapper.querySelector("input").checked = true;
     button.addEventListener("change", () => {
-      img.src = variant.image.src;
-      img.alt = variant.title;
+      if (img) {
+        img.src = variant.image.src;
+        img.alt = variant.title;
+      }
       dropdown.querySelector("p").innerHTML = button.getAttribute("label-text");
     });
   });
@@ -587,7 +589,11 @@ const createCart = (data, orderBumpData, lpParams) => {
 
     buyButton.addEventListener("click", async () => {
       // buyButton.toggleAttribute("disabled");
-      const result = await buy(data, btnDiscount, lpParams);
+      const result = await buy({
+        data,
+        btnDiscount,
+        lpParams,
+      });
       // if (!result) buyButton.toggleAttribute("disabled");
     });
     cartWrapper.classList.toggle("active");
@@ -597,4 +603,4 @@ const createCart = (data, orderBumpData, lpParams) => {
   return updateCartProducts;
 };
 
-export { createCart };
+export { createCart, createDropdown, handleSimpleProduct };
