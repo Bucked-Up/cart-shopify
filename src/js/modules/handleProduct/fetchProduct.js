@@ -28,7 +28,7 @@ const filterVariants = (data, products, isOrderBump) => {
     if (Object.keys(products).length > 0) {
       if (currentProduct.title) prod.title = currentProduct.title;
       if (currentProduct.hasQtty) prod.hasQtty = hasQtty;
-      if (currentProduct.oneCard && prod.variants?.length > 1) prod.oneCard = true;
+      if (currentProduct.oneCard && prod.variants?.edges?.length > 1) prod.oneCard = true;
       if (currentProduct.noPriceUp) prod.noPriceUp = true;
       if (currentProduct.variants)
         prod.variants.edges = prod.variants.edges.filter((filteredVariant) =>
