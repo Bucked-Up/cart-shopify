@@ -26,36 +26,38 @@
 </html>
 
 <script type="module">
-  import shopifyApiCode from "./src/js/scripts.js"
-  shopifyApiCode({
-    country: "us",
-    dataLayer: {
-      step_count: "",
-      page_id: "",
-      version_id: "",
-    },
-    products: {
-      9123402547506: {variants: [48095079301426], oneCard: true},
-    },
-    buttons: {
-      "btn-1": {
-        discountCode: ""
+  const handleShopifyApi = async () => {
+    const { default: shopifyApiCode } = await import(`https://cdn.jsdelivr.net/gh/Bucked-Up/cart-shopify@2/src/js/scripts.js?t=${Math.floor(Date.now() / 3600000)}`);
+    shopifyApiCode({
+      noCart: false,
+      country: "us",
+      dataLayer: {
+        step_count: "",
+        page_id: "",
+        version_id: "",
       },
-      "btn-2": {
-      	products: {
-        	8768930349362: {quantity: 4},
-          8858112131378: {},
-          8768930185522: {}
+      products: {
+        9037941342514: {},
+        9123402547506: {},
+        8685143195954: {},
+      },
+      bump: {
+        products: {
+          increase: {
+            quantity: 2,
+            title: "UPGRADE YOUR ORDER: Add 5 More Top Tier Formulas For 60% OFF!",
+            image: "https://cdn.prod.website-files.com/65b28c0eb93277a8f54267b8/66579906d3325a9075b8553a_8047-kickstart-512x512.1679521338.webp",
+            discart: [9037941342514, 9123402547506],
+          },
         },
-        discountCode: ""
+        price: 7.99,
+        discountCode: "",
       },
-      "btn-3": {
-      	products: {
-        	8768930349362: {},
-        },
-        discountCode: ""
+      buttons: {
+        "btn-1": {},
       },
-    },
-    discountCode: "",
-  });
+      discountCode: "",
+    });
+  }
+  handleShopifyApi();
 </script>

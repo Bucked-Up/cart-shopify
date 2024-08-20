@@ -5,7 +5,12 @@
 ### 1. Place this code into html/css head, change primary and secondary as needed.
 
 ```
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Bucked-Up/cart-shopify@2/src/scss/style.css">
+<script>
+  document.head.appendChild(Object.assign(document.createElement("link"), {
+    rel: "stylesheet",
+    href: `https://cdn.jsdelivr.net/gh/Bucked-Up/cart-shopify@2/src/scss/style.css?t=${Math.floor(Date.now()/3600000)}`
+  }));
+</script>
 ```
 
 ## 1.1 If it needs cookie banner, place this as well:
@@ -20,33 +25,36 @@
 
 ```
 <script type="module">
-  import shopifyApiCode from "https://cdn.jsdelivr.net/gh/Bucked-Up/cart-shopify@2/src/js/scripts.js"
-  shopifyApiCode({
-    noCart: false,
-    country: "us",
-    dataLayer: {
-      step_count: "",
-      page_id: "",
-      version_id: "",
-    },
-    products: {
-      999: {},
-      998: {},
-    },
-    bump: {
+  const handleShopifyApi = async () => {
+    const { default: shopifyApiCode } = await import(`https://cdn.jsdelivr.net/gh/Bucked-Up/cart-shopify@2/src/js/scripts.js?t=${Math.floor(Date.now() / 3600000)}`);
+    shopifyApiCode({
+      noCart: false,
+      country: "us",
+      dataLayer: {
+        step_count: "",
+        page_id: "",
+        version_id: "",
+      },
       products: {
         999: {},
         998: {},
       },
-      price: 9.99,
-      discountCode: "testBump",
-    },
-    buttons: {
-      "BTN-1": {},
-      "BTN-2": {},
-    },
-    discountCode: "test",
-  });
+      bump: {
+        products: {
+          999: {},
+          998: {},
+        },
+        price: 9.99,
+        discountCode: "testBump",
+      },
+      buttons: {
+        "BTN-1": {},
+        "BTN-2": {},
+      },
+      discountCode: "test",
+    });
+  }
+  handleShopifyApi();
 </script>
 ```
 
@@ -91,6 +99,7 @@ You can add a variants property to a product.
 
 SHOPIFY You can add the same product with different options by differentiating it with a "-sonething"
 ex:
+
 ```
   999: {},
   "999-2": { oneCard: true, title: "Babe Pre-Workout or LFG", noPriceUp: true },
