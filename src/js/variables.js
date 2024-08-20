@@ -49,12 +49,11 @@ const getBenProducts = async ({ ids, country }) => {
     if (country && country !== "us") url = url + `?country=${country}`;
     try {
       const response = await fetch(url);
-      if (response.status === 404) throw new Error("Product Not Found.");
+      if (response.status === 404) throw new Error(`Product ${id} Not Found.`);
       if (response.status == 500 || response.status == 400) throw new Error("Sorry, there was a problem.");
       const data = await response.json();
       return data;
     } catch (error) {
-      alert("Product not found.");
       return Promise.reject(error);
     }
   };
@@ -62,4 +61,28 @@ const getBenProducts = async ({ ids, country }) => {
   return data.map((data) => data.product);
 };
 
-export { handleFetch, getBenProducts, getAccessToken };
+const trySentry = ({ error, message }) => {
+  try {
+    if (error) {
+      console.error(error);
+      Sentry.captureException(error);
+    } else {
+      console.error(message);
+      const sentryError = new Error();
+      sentryError.name = "Error";
+      sentryError.message = message;
+      Sentry.captureException(sentryError);
+    }
+  } catch (e) {
+    console.error("Error loading sentry.");
+  }
+};
+
+const handleError = () => {
+  document.body.classList.add("error");
+  setTimeout(() => {
+    window.location.href = "https://buckedup.com";
+  }, 3000);
+};
+
+export { handleFetch, getBenProducts, getAccessToken, trySentry, handleError };

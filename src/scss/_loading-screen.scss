@@ -6,23 +6,32 @@
   width: 100vw;
   height: 100vh;
   z-index: 1000;
-  display: flex;
+  display: none;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   svg {
     animation: scaleUp 3s ease-in-out infinite alternate;
   }
-  h2 {
+  p {
+    margin-top: 32px;
+    font-size: 16px;
+    font-family: Poppins;
+    line-height: 110%;
     text-align: center;
-    margin-bottom: 2.5rem;
-    font-size: 1.5rem;
+    color: black;
+    display: none;
   }
 }
 
-body:not(.loading) {
-  .loading-screen {
-    display: none;
+body.error{
+  .loading-screen p{
+    display: block;
+  }
+}
+body.loading, body.error{
+  .loading-screen{
+    display: flex;
   }
 }
 

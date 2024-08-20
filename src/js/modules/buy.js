@@ -1,6 +1,6 @@
 import toggleLoading from "./toggleLoading.js";
 import { dataLayerRedirect } from "./dataLayer.js";
-import { handleFetch } from "../variables.js";
+import { handleError, handleFetch, trySentry } from "../variables.js";
 
 const getVariantId = (product, oneCardQuantity) => {
   const primaryWrapper = document.querySelector(`[primary="${product.id}"]`);
@@ -192,7 +192,7 @@ const buy = async (data, btnDiscount, lpParams, noCart = undefined) => {
   } else {
     const input = {
       input: {
-        lineItems: [...obj],
+        lineItems: obj,
       },
     };
     const query = `
@@ -213,11 +213,7 @@ const buy = async (data, btnDiscount, lpParams, noCart = undefined) => {
     try {
       const response = await handleFetch({ body, country: lpParams.country });
       const apiData = await response.json();
-      if (!response.ok) {
-        console.warn(response);
-        console.warn(apiData);
-        throw new Error("Api Error.");
-      }
+      if (!response.ok || apiData.errors) throw new Error(`Api Error. ${JSON.stringify(apiData)}`);
       const checkoutId = apiData.data.checkoutCreate.checkout.id;
       const hasBumpIncreaseDiscount = document.querySelector("[bump-increase-qtty-input]");
       const bumpDiscount =
@@ -233,7 +229,8 @@ const buy = async (data, btnDiscount, lpParams, noCart = undefined) => {
         } else discount = bumpDiscount;
         if (urlDiscount) discount = discount ? discount + `-${urlDiscount}` : urlDiscount;
         const responseDiscount = await addDiscount(checkoutId, discount, lpParams.country);
-        if (!responseDiscount.ok) throw new Error("Api Discount Error.");
+        const discountData = await responseDiscount.json();
+        if (!responseDiscount.ok) throw new Error(`Api Discount Error. ${JSON.stringify(discountData)}`);
       }
 
       startPopsixle(checkoutId.split("?key=")[1]);
@@ -270,14 +267,16 @@ const buy = async (data, btnDiscount, lpParams, noCart = undefined) => {
         checkoutId,
         lpParams.country
       );
-      if (!attributesResponse.ok) throw new Error("Attributes Error.");
+      const attributesData = await attributesResponse.json();
+      if (!attributesResponse.ok) throw new Error(`Attributes Error. ${JSON.stringify(attributesData)}`);
 
       dataLayerRedirect(lpParams.dataLayer, data);
       window.location.href = `${apiData.data.checkoutCreate.checkout.webUrl}&${urlParams}`;
       return true;
     } catch (error) {
-      alert("There was a problem. Please try again later.");
-      return Promise.reject(error);
+      trySentry({error});
+      handleError()
+      return;
     }
   }
 };

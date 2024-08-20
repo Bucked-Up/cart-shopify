@@ -5,6 +5,7 @@ import { createCart } from "./modules/handleCart.js";
 import buy from "./modules/buy.js";
 import fetchProductBen from "./modules/handleProduct/fetchProductBen.js";
 import handleCookieBanner, { tryFbq } from "./modules/handleCookieBanner.js";
+import { handleError, trySentry } from "./variables.js";
 
 const shopifyApiCode = async (lpParams) => {
   window.addEventListener("pageshow", function (event) {
@@ -12,27 +13,39 @@ const shopifyApiCode = async (lpParams) => {
       document.body.classList.remove("loading");
     }
   });
+  const noStock = (el) => !el.availableForSale;
+  const dontExist = (btn) => !btn;
   toggleLoading();
   const isBenSys = "isBenSys" in lpParams;
   if (lpParams.country === "uk") handleCookieBanner({ country: lpParams.country });
   else tryFbq("grant");
-  const [data, orderBumpData] = isBenSys
-    ? await Promise.all([
-        fetchProductBen({ products: lpParams.products, country: lpParams.country }),
-        lpParams.bump && fetchProductBen({ products: lpParams.bump.products, isOrderBump: true, country: lpParams.country }),
-      ])
-    : await Promise.all([
-        fetchProduct({ products: lpParams.products, country: lpParams.country }),
-        lpParams.bump && fetchProduct({ products: lpParams.bump.products, isOrderBump: true, country: lpParams.country }),
-      ]);
-  const noStock = (el) => !el.availableForSale;
+  let data, orderBumpData;
+  try {
+    [data, orderBumpData] = isBenSys
+      ? await Promise.all([
+          fetchProductBen({ products: lpParams.products, country: lpParams.country }),
+          lpParams.bump && fetchProductBen({ products: lpParams.bump.products, isOrderBump: true, country: lpParams.country }),
+        ])
+      : await Promise.all([
+          fetchProduct({ products: lpParams.products, country: lpParams.country }),
+          lpParams.bump && fetchProduct({ products: lpParams.bump.products, isOrderBump: true, country: lpParams.country }),
+        ]);
+  } catch (e) {
+    trySentry({error: e})
+    handleError();
+    return;
+  }
   if (data.some(noStock)) {
-    alert("Product not found.");
-    window.location.href = "https://buckedup.com";
+    handleError();
     return;
   }
   dataLayerStart(lpParams.dataLayer, data, lpParams.discountCode);
   const buttons = Object.keys(lpParams.buttons).map((id) => document.getElementById(id));
+  if (buttons.some(dontExist)) {
+    trySentry({message: "Wrong button id."})
+    handleError();
+    return;
+  }
   const handleBtnNoCart = (btn) => {
     btn.addEventListener("click", () => {
       let btnData;

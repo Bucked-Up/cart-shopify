@@ -28,50 +28,34 @@
 <script type="module">
   import shopifyApiCode from "./src/js/scripts.js"
   shopifyApiCode({
-    noCart: false,
     country: "us",
     dataLayer: {
       step_count: "",
-      page_id: "Crea-lp-ops",
-      version_id: "Crealp2",
+      page_id: "",
+      version_id: "",
     },
     products: {
-      8768929923378: { oneCard: true, title: "Babe or LFG Pre-Workout", noPriceUp: true },
-      8685144408370: { variantOf: 8768929923378 },
-      8858113114418: {},
-      8858114097458: {},
-      9472526483762: {},
-      9472518226226: {},
-      9472494731570: {},
+      9123402547506: {variants: [48095079301426], oneCard: true},
     },
     buttons: {
       "btn-1": {
-        products: {
-          8858113114418: {},
-          8768929923378: {},
-          8858114097458: {},
-          9472518226226: {},
-        },
-        discountCode: "CLAIMCREATINE2",
+        discountCode: ""
       },
       "btn-2": {
-        products: {
-          8858113114418: { quantity: 2 },
-          8768929923378: { quantity: 2 },
-          8858114097458: {},
-          9472526483762: {},
+      	products: {
+        	8768930349362: {quantity: 4},
+          8858112131378: {},
+          8768930185522: {}
         },
-        discountCode: "CLAIMCREATINE4",
+        discountCode: ""
       },
       "btn-3": {
-        noCart: true,
-        products: {
-          8858113114418: {},
-          9472494731570: {},
+      	products: {
+        	8768930349362: {},
         },
-        discountCode: "CLAIMCREATINE1"
+        discountCode: ""
       },
     },
-    discountCode: "CLAIMCREATINE2",
+    discountCode: "",
   });
 </script>

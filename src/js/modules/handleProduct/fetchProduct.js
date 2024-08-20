@@ -1,4 +1,4 @@
-import { handleFetch } from "../../variables.js";
+import { handleFetch, trySentry } from "../../variables.js";
 
 const filterVariants = (data, products, isOrderBump) => {
   const ids = Object.keys(products);
@@ -28,7 +28,7 @@ const filterVariants = (data, products, isOrderBump) => {
     if (Object.keys(products).length > 0) {
       if (currentProduct.title) prod.title = currentProduct.title;
       if (currentProduct.hasQtty) prod.hasQtty = hasQtty;
-      if (currentProduct.oneCard) prod.oneCard = true;
+      if (currentProduct.oneCard && prod.variants?.length > 1) prod.oneCard = true;
       if (currentProduct.noPriceUp) prod.noPriceUp = true;
       if (currentProduct.variants)
         prod.variants.edges = prod.variants.edges.filter((filteredVariant) =>
@@ -39,11 +39,6 @@ const filterVariants = (data, products, isOrderBump) => {
         prod.variants.edges.forEach((variant) => {
           mainProd.variants.edges.push(variant);
         });
-        // for (let i = 0; i < data.length; i++)
-        //   if (data[i].id === prod.id) {
-        //     data.splice(i, 1);
-        //     break;
-        //   }
       }
       if (currentProduct.isWhole) {
         prod.availableForSale = prod.variants.edges.every(isAvailable);
@@ -98,17 +93,14 @@ const fetchProduct = async ({ products, isOrderBump = false, country }) => {
   try {
     const response = await handleFetch({ body: { query }, country });
     let data = await response.json();
-    if (!response.ok || data.data.nodes.some((prod) => prod === null)) {
-      console.warn(response);
-      console.warn(data);
-      throw new Error("Error Fetching Api.");
-    }
+    if (!response.ok) throw new Error(`Error Fetching Api. ${JSON.stringify(data)}`);
+    if (data.data.nodes.some((prod) => prod === null)) throw new Error(`Missing Product. ${JSON.stringify(data)}`);
     data = data.data.nodes;
     filterVariants(data, products, isOrderBump);
 
     data.forEach((prod) => {
       if (!prod.availableForSale) {
-        console.warn("Out of stock: ", prod.id, prod.title);
+        trySentry({ message: `Out of stock: ${prod.id} ${prod.title}` });
         return;
       }
       prod.id = prod.id.split("/").slice(-1)[0];
@@ -130,7 +122,6 @@ const fetchProduct = async ({ products, isOrderBump = false, country }) => {
     });
     return data;
   } catch (error) {
-    alert("Product not found.");
     return Promise.reject(error);
   }
 };

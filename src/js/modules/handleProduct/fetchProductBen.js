@@ -1,4 +1,4 @@
-import { getBenProducts } from "../../variables.js";
+import { getBenProducts, trySentry } from "../../variables.js";
 
 const checkStock = (prod, mainId, secondId) => {
   return (
@@ -18,7 +18,7 @@ const fetchProductBen = async ({ products, country, isOrderBump }) => {
       const currentProd = products[prod.id];
       if (!isNormalProduct) {
         if (Object.values(prod.stock).every((val) => val <= 0)) {
-          console.warn("Out of stock: ", prod.id);
+          trySentry({message: `Out of stock: ${prod.id}`})
           data.noStock = true;
           return;
         }
@@ -81,7 +81,7 @@ const fetchProductBen = async ({ products, country, isOrderBump }) => {
           if (!option.values.length == 0) {
             option.values = option.values.filter((value) => value.in_stock);
             if (option.values.length <= 0) {
-              console.warn("Out of stock: ", prod.id);
+              trySentry({message: `Out of stock: ${prod.id}`})
               newProd.availableForSale = false;
               continue;
             }
