@@ -26,9 +26,8 @@
 </html>
 
 <script type="module">
-  const handleShopifyApi = async () => {
-    const { default: shopifyApiCode } = await import(`https://cdn.jsdelivr.net/gh/Bucked-Up/cart-shopify@2/src/js/scripts.js?t=${Math.floor(Date.now() / 3600000)}`);
-    shopifyApiCode({
+  import shopifyApiCode from "./src/js/scripts.js"
+  shopifyApiCode({
       noCart: false,
       country: "us",
       dataLayer: {
@@ -58,6 +57,4 @@
       },
       discountCode: "",
     });
-  }
-  handleShopifyApi();
 </script>
