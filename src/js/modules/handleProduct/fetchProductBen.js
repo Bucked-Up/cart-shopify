@@ -78,6 +78,7 @@ const fetchProductBen = async ({ products, country, isOrderBump }) => {
         newData.push(newProd);
       } else {
         for (let option of prod.options) {
+          const newProd = {};
           if (!option.values.length == 0) {
             option.values = option.values.filter((value) => value.in_stock);
             if (option.values.length <= 0) {
@@ -86,7 +87,6 @@ const fetchProductBen = async ({ products, country, isOrderBump }) => {
               continue;
             }
           }
-          const newProd = {};
           newProd.availableForSale = true;
           newProd.options = [];
           newProd.id = `${prod.id}`;

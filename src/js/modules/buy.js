@@ -216,8 +216,13 @@ const buy = async (data, btnDiscount, lpParams, noCart = undefined) => {
       if (!response.ok || apiData.errors) throw new Error(`Api Error. ${JSON.stringify(apiData)}`);
       const checkoutId = apiData.data.checkoutCreate.checkout.id;
       const hasBumpIncreaseDiscount = document.querySelector("[bump-increase-qtty-input]");
-      const bumpDiscount =
-        (hasBumpIncreaseDiscount && lpParams.bump.discountCode) || (data.find((prod) => prod.id.includes("ob")) && lpParams.bump.discountCode);
+      let bumpDiscount = (hasBumpIncreaseDiscount && lpParams.bump.discountCode) || (data.find((prod) => prod.id.includes("ob")) && lpParams.bump.discountCode);
+      data
+        .filter((prod) => prod.id.includes("ob"))
+        .forEach((prod) => {
+          const discountCode = lpParams.bump.products[prod.id.split("ob")[0]].discountCode;
+          if (discountCode) bumpDiscount = bumpDiscount + "-" + lpParams.bump.products[prod.id.split("ob")[0]].discountCode;
+        });
       const urlDiscount = urlParams.get("discount");
       if (lpParams.discountCode !== "" || btnDiscount || bumpDiscount || urlDiscount) {
         let discount;
@@ -274,8 +279,8 @@ const buy = async (data, btnDiscount, lpParams, noCart = undefined) => {
       window.location.href = `${apiData.data.checkoutCreate.checkout.webUrl}&${urlParams}`;
       return true;
     } catch (error) {
-      trySentry({error});
-      handleError()
+      trySentry({ error });
+      handleError();
       return;
     }
   }

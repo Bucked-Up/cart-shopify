@@ -78,6 +78,19 @@ SHOPIFY (needs to see how to add multiple discontCodes on the ecomm) You can hav
   },
 ```
 
+You can have more than one bump product.
+
+```
+bump: {
+  products: {
+    999: { title: "Get 30 Servings of Babe Greens & Free Shipping On Your Order!" },
+    999: { title: "Get 30 Servings of Babe Collagen & Free Shipping On Your Order!", discountCode: "lorem"}
+  },
+  price: 39.99,
+  discountCode: "ipsum",
+},
+```
+
 product can have the following boolean properties:
 
 - oneCard

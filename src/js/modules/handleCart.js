@@ -316,7 +316,6 @@ const createPlaceholders = ({ prod, selectionDiv }) => {
 };
 
 const createBumpAddButton = ({ data, container, wrapper, inCartContainer, prod, price, lpParams }) => {
-  const isMulti = prod.length > 1;
   const isIncrease = typeof prod === "string" && prod === "increase";
   const addButton = document.createElement("button");
   addButton.classList.add("add-button");
@@ -330,8 +329,7 @@ const createBumpAddButton = ({ data, container, wrapper, inCartContainer, prod, 
       if (isIncrease) {
         document.querySelectorAll("[bump-increase-qtty-input]").forEach((input) => input.remove());
       } else {
-        if (isMulti) prod.forEach((prod) => data.splice(data.indexOf(prod), 1));
-        else data.splice(data.indexOf(prod), 1);
+        data.splice(data.indexOf(prod), 1);
       }
     } else {
       if (isIncrease) {
@@ -344,8 +342,7 @@ const createBumpAddButton = ({ data, container, wrapper, inCartContainer, prod, 
           document.body.appendChild(hiddenInput);
         });
       } else {
-        if (isMulti) prod.forEach((prod) => data.push(prod));
-        else data.push(prod);
+        data.push(prod);
       }
       addButton.classList.add("bump-added");
       addButton.innerHTML = "Added to card";
@@ -438,8 +435,7 @@ const createProduct = ({ prod, isVariant, isOrderBump, orderBumpsContainer, inCa
     else if (!prod.oneCard) handleSimpleProduct({ prod, productInfo, img });
     else handleOneCardProduct({ prod, productInfo });
   }
-  const isMulti = isOrderBump && Object.keys(lpParams.bump.products).length > 1;
-  if (isOrderBump && !isMulti) {
+  if (isOrderBump) {
     const addWrapper = document.createElement("div");
     addWrapper.classList.add("add-wrapper");
     const addButton = createBumpAddButton({
@@ -571,16 +567,7 @@ const createCart = (data, orderBumpData, lpParams) => {
         if (prodCard) inCartContainer.appendChild(prodCard);
       }
     });
-    if (orderBumpData && Object.keys(orderBumpData).length > 1) {
-      const [multiBumpWrapper, bumpButton] = createMultiBumpWrapper({ data, container: orderBumpsContainer, inCartContainer, prod: orderBumpData });
-      orderBumpsContainer.appendChild(multiBumpWrapper);
-      orderBumpData.forEach((prod) => {
-        multiBumpWrapper.appendChild(
-          createProduct({ prod, lpParams, isOrderBump: true, lpParams, inCartContainer, orderBumpsContainer: multiBumpWrapper, data })
-        );
-      });
-      multiBumpWrapper.appendChild(bumpButton);
-    } else if (orderBumpData)
+    if (orderBumpData)
       orderBumpData.forEach((prod) => {
         orderBumpsContainer.appendChild(createProduct({ prod, lpParams, isOrderBump: true, inCartContainer, orderBumpsContainer, data }));
       });
