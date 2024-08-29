@@ -444,7 +444,7 @@ const createProduct = ({ prod, isVariant, isOrderBump, orderBumpsContainer, inCa
       wrapper: productWrapper,
       inCartContainer,
       prod,
-      price: lpParams.bump.price,
+      price: lpParams.bump.products[prod.id.split("ob")[0]].price || lpParams.bump.price,
       lpParams,
     });
     addWrapper.appendChild(addButton);
