@@ -110,14 +110,6 @@ SHOPIFY You can add a noPriceUp property to a product.
 
 You can add a variants property to a product.
 
-SHOPIFY You can add the same product with different options by differentiating it with a "-sonething"
-ex:
-
-```
-  999: {},
-  "999-2": { oneCard: true, title: "Babe Pre-Workout or LFG", noPriceUp: true },
-```
-
 ```
 products: {
   999: {variants: [9998,9997]},
