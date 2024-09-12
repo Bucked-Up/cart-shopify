@@ -15,7 +15,7 @@ const getVariantId = (product, oneCardQuantity) => {
     const choicesContainer = prodContainer.querySelector(".cart__placeholders");
     const variantsContainer = prodContainer.querySelector(".cart__variant-selection__container");
     const values = Array.from(choicesContainer.querySelectorAll("button")).map((button) => button.value);
-    if (values.length < oneCardQuantity) {
+    if (!values.length || values.length < oneCardQuantity) {
       variantsContainer.classList.add("shake");
       choicesContainer.querySelectorAll("button").forEach((button) => {
         button.removeAttribute("variantGot");
@@ -109,7 +109,7 @@ const startPopsixle = (id) => {
   }
 };
 
-const buy = async (data, btnDiscount, lpParams, noCart = undefined) => {
+const buy = async ({ data, btnDiscount, lpParams, noCart, btnProducts }) => {
   const urlParams = new URLSearchParams(window.location.search);
   const variantId = [];
 
@@ -126,7 +126,9 @@ const buy = async (data, btnDiscount, lpParams, noCart = undefined) => {
 
   for (let product of data) {
     if (product.oneCard && !product.isWhole) {
-      const selectedVariant = getVariantId(product, lpParams.products[product.id.split("id")[0]].quantity);
+      const prodQuantity = (btnProducts && btnProducts[product.id.split("id")[0]]?.quantity) || lpParams.products[product.id.split("id")[0]].quantity || 1;
+      const selectedVariant = getVariantId(product, prodQuantity);
+      if (!selectedVariant[0]?.result) return;
       selectedVariant.forEach((variant) => {
         variantId.push({ id: variant.result, quantity: variant.quantity, prod: product });
       });

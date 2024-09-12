@@ -53,7 +53,7 @@ const shopifyApiCode = async (lpParams) => {
       const filteredData = btnProducts ? data.filter((prod) => prod.id in btnProducts) : data;
       filteredData.forEach((prod) => (prod.quantity = (btnProducts && btnProducts[prod.id].quantity) || lpParams.products[prod.id].quantity || 1));
       btnData = filteredData;
-      buy(btnData, lpParams.buttons[btn.id].discountCode, lpParams, true);
+      buy({data: btnData, btnDiscount: lpParams.buttons[btn.id].discountCode, lpParams, noCart: true});
     });
   };
   if (lpParams.noCart) {

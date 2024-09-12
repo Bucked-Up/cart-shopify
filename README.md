@@ -71,7 +71,7 @@ SHOPIFY (needs to see how to add multiple discontCodes on the ecomm) You can hav
 ```
   bump: {
     products: {
-      "increase": {quantity: 2, title: "test", image: "https://"},
+      "increase": {quantity: 2, title: "test", image: "https://", discart: [999,998]},
     },
     price: 9.99,
     discountCode: "testBump",

@@ -438,7 +438,6 @@ const createProduct = ({ prod, isVariant, isOrderBump, orderBumpsContainer, inCa
   if (isOrderBump) {
     const addWrapper = document.createElement("div");
     addWrapper.classList.add("add-wrapper");
-    console.log(prod)
     const addButton = createBumpAddButton({
       data,
       container: orderBumpsContainer,
@@ -574,9 +573,7 @@ const createCart = (data, orderBumpData, lpParams) => {
       });
 
     buyButton.addEventListener("click", async () => {
-      // buyButton.toggleAttribute("disabled");
-      const result = await buy(data, btnDiscount, lpParams);
-      // if (!result) buyButton.toggleAttribute("disabled");
+      const result = await buy({ data, btnDiscount, lpParams, btnProducts });
     });
     cartWrapper.classList.toggle("active");
     document.body.classList.toggle("no-scroll");

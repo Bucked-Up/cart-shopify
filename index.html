@@ -29,31 +29,30 @@
   import shopifyApiCode from "./src/js/scripts.js"
   shopifyApiCode({
     noCart: false,
-    country: "us",
+    country: "au",
     dataLayer: {
-      step_count: "",
-      page_id: "ksfb7",
-      version_id: "ksfb7",
+      step_count: "lp",
+      page_id: "KS-LP-OPS",
+      version_id: "sauksfb2b",
     },
     products: {
-      9037941342514: {},
-      9123402547506: {},
-      8685143195954: {},
-    }, bump: {
-      products: {
-        increase: {
-          quantity: 2,
-          title: "UPGRADE YOUR ORDER: Add 5 More Top Tier Formulas For 60% OFF!",
-          image: "https://cdn.prod.website-files.com/65b28c0eb93277a8f54267b8/66579906d3325a9075b8553a_8047-kickstart-512x512.1679521338.webp",
-          discart: [9037941342514, 9123402547506],
-        },
+      6967168598119: {
+        oneCard: true,
+        quantity: 8,
       },
-      price: 7.99,
-      discountCode: "MOREKICKSTART",
+      6967158964327: {},
+      7075707879527: {},
     },
     buttons: {
       "btn-1": {},
     },
-    discountCode: "ksfb7",
+    bump: {
+      products: {
+        "increase": { quantity: 2, title: "test", image: "https://", },
+      },
+      price: 9.99,
+      discountCode: "testBump",
+    },
+    discountCode: "sauksfb2b",
   });
 </script>
