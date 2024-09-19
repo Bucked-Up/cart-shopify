@@ -42,7 +42,6 @@ const fetchProductBen = async ({ products, country, isOrderBump }) => {
         }
         newProd.title = currentProd.title || prod.name;
         newProd.variants = [];
-        newProd.oneCard = currentProd.oneCard;
         newProd.hasQtty = currentProd.hasQtty;
         newProd.isBenSysShirt = true;
         prod.options.forEach((option) => {
@@ -95,7 +94,7 @@ const fetchProductBen = async ({ products, country, isOrderBump }) => {
           }
           newProd.title = currentProd.title || prod.name;
           newProd.variants = [];
-          newProd.oneCard = currentProd.oneCard;
+          if (currentProd.oneCard && prod.variants?.edges?.length > 1) prod.oneCard = true;
           newProd.hasQtty = currentProd.hasQtty;
           if (currentProd.variants) option.values = option.values.filter((value) => currentProd.variants.includes(value.id));
           option.values.forEach((value) => {

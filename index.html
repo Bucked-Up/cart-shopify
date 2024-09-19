@@ -28,31 +28,24 @@
 <script type="module">
   import shopifyApiCode from "./src/js/scripts.js"
   shopifyApiCode({
-    noCart: true,
+    noCart: false,
+    isBenSys: {},
     country: "au",
     dataLayer: {
       step_count: "lp",
-      page_id: "KS-LP-OPS",
-      version_id: "sauksfb2b",
+      page_id: "OG-LP-OPS",
+      version_id: "AUFLAMB",
     },
     products: {
-      6967168598119: {
-        // oneCard: true,
-        quantity: 8,
+      1596: {
+        oneCard: true,
+        quantity: 10,
       },
-      6967158964327: {},
-      7075707879527: {},
+      1506: {},
     },
     buttons: {
       "btn-1": {},
     },
-    bump: {
-      products: {
-        "increase": { quantity: 2, title: "test", image: "https://", },
-      },
-      price: 9.99,
-      discountCode: "testBump",
-    },
-    discountCode: "sauksfb2b",
+    discountCode: "AUFLAMB",
   });
 </script>
