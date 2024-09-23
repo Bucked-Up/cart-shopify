@@ -43,7 +43,8 @@ const filterVariants = (data, products, isOrderBump) => {
         prod.availableForSale = prod.variants.edges.every(isAvailable);
         prod.isWhole = true;
       } else if (currentProduct.variants) prod.availableForSale = !prod.variants.edges.every(isNotAvailable);
-      if (currentProduct.oneCard && prod.variants?.edges?.length > 1) prod.oneCard = true;
+      prod.variants = prod.variants.edges.filter((edge) => edge.node.availableForSale);
+      if (currentProduct.oneCard && prod.variants.length > 1) prod.oneCard = true;
     }
   });
 };
@@ -105,7 +106,6 @@ const fetchProduct = async ({ products, isOrderBump = false, country }) => {
       }
       prod.id = prod.id.split("/").slice(-1)[0];
 
-      prod.variants = prod.variants.edges.filter((edge) => edge.node.availableForSale);
       let minPrice = 99999;
       for (let key in prod.variants) {
         prod.variants[key] = prod.variants[key].node;
