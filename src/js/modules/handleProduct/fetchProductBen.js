@@ -83,6 +83,7 @@ const fetchProductBen = async ({ products, country, isOrderBump }) => {
             if (option.values.length <= 0) {
               trySentry({message: `Out of stock: ${prod.id}`})
               newProd.availableForSale = false;
+              newData.push(newProd)
               continue;
             }
           }
