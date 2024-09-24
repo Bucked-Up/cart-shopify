@@ -28,42 +28,26 @@
 <script type="module">
   import shopifyApiCode from "./src/js/scripts.js"
   shopifyApiCode({
-    country: "us",
-    dataLayer: {
-      step_count: "",
-      page_id: "",
-      version_id: "BOOST - FB - LP - 2V32 - LANDING",
-    },
-    products: {
-      8820417003826: { oneCard: true, variants: [47093096939826,47093096907058] },
-      9322259775794: { variantOf: 8820417003826 },
-      8858111377714: {},
-      8768929825074: {},
-    },
-    buttons: {
-      "btn-2": {
-        products: {
-          8820417003826: { quantity: 2 },
-          8858111377714: {},
-        },
-        discountCode: "gboost2"
+      noCart: false,
+      isBenSys: {},
+      country: "au",
+      dataLayer: {
+        step_count: "lp",
+        page_id: "OG-LP-OPS",
+        version_id: "AUFLAMB",
       },
-      "btn-3": {
-        products: {
-          8820417003826: { quantity: 4 },
-          8858111377714: {},
-          8768929825074: {},
+      products: {
+        1596: {
+          oneCard: true,
+          quantity: 10,
+          title: "Stick Packs"
         },
-        discountCode: "gboost4"
+        1506: {title: "Perfect Shaker Bottle"},
       },
-      "btn-1": {
-        products: {
-          8820417003826: {},
-          8858111377714: {},
-        },
-        discountCode: "gboost1"
+      buttons: {
+        "btn-1": {},
       },
-    },
-    discountCode: "",
-  });
+      discountCode: "AUFLAMB",
+    });
+
 </script>

@@ -95,7 +95,6 @@ const fetchProductBen = async ({ products, country, isOrderBump }) => {
           }
           newProd.title = currentProd.title || prod.name;
           newProd.variants = [];
-          if (currentProd.oneCard && prod.variants?.edges?.length > 1) prod.oneCard = true;
           newProd.hasQtty = currentProd.hasQtty;
           if (currentProd.variants) option.values = option.values.filter((value) => currentProd.variants.includes(value.id));
           option.values.forEach((value) => {
@@ -112,6 +111,7 @@ const fetchProductBen = async ({ products, country, isOrderBump }) => {
             newProd.availableForSale = newProd.variants.every(isAvailable);
             newProd.isWhole = true;
           } else if (currentProd.variants) newProd.availableForSale = !newProd.variants.every(isNotAvailable);
+          if (currentProd.oneCard && newProd.variants?.length > 1) newProd.oneCard = true;
           newData.push(newProd);
         }
       }
