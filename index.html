@@ -28,21 +28,42 @@
 <script type="module">
   import shopifyApiCode from "./src/js/scripts.js"
   shopifyApiCode({
-    noCart: false,
-    isBenSys: {},
-    country: "au",
+    country: "us",
     dataLayer: {
-      step_count: "lp",
-      page_id: "OG-LP-OPS",
-      version_id: "AUOGAMB",
+      step_count: "",
+      page_id: "",
+      version_id: "BOOST - FB - LP - 2V32 - LANDING",
     },
     products: {
-      1597: { oneCard: true, quantity: 3, title: "Stick Packs" },
-      1507: { title: "Perfect Shaker Bottle" },
+      8820417003826: { oneCard: true, variants: [47093096939826,47093096907058] },
+      9322259775794: { variantOf: 8820417003826 },
+      8858111377714: {},
+      8768929825074: {},
     },
     buttons: {
-      "btn-1": {},
+      "btn-2": {
+        products: {
+          8820417003826: { quantity: 2 },
+          8858111377714: {},
+        },
+        discountCode: "gboost2"
+      },
+      "btn-3": {
+        products: {
+          8820417003826: { quantity: 4 },
+          8858111377714: {},
+          8768929825074: {},
+        },
+        discountCode: "gboost4"
+      },
+      "btn-1": {
+        products: {
+          8820417003826: {},
+          8858111377714: {},
+        },
+        discountCode: "gboost1"
+      },
     },
-    discountCode: "AUOGAMB",
+    discountCode: "",
   });
 </script>

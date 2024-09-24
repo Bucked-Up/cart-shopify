@@ -26,24 +26,24 @@ const filterVariants = (data, products, isOrderBump) => {
       prod.title = currentProduct.title;
     }
     if (Object.keys(products).length > 0) {
+      prod.variants = prod.variants.edges.filter((edge) => edge.node.availableForSale);
       if (currentProduct.title) prod.title = currentProduct.title;
       if (currentProduct.hasQtty) prod.hasQtty = hasQtty;
       if (currentProduct.noPriceUp) prod.noPriceUp = true;
       if (currentProduct.variants)
-        prod.variants.edges = prod.variants.edges.filter((filteredVariant) =>
+        prod.variants = prod.variants.filter((filteredVariant) =>
           currentProduct.variants.includes(+filteredVariant.node.id.split("ProductVariant/")[1])
         );
       if (currentProduct.variantOf) {
         const mainProd = data.find((prod) => prod.id.includes(currentProduct.variantOf));
-        prod.variants.edges.forEach((variant) => {
-          mainProd.variants.edges.push(variant);
+        prod.variants.forEach((variant) => {
+          mainProd.variants.push(variant);
         });
       }
       if (currentProduct.isWhole) {
-        prod.availableForSale = prod.variants.edges.every(isAvailable);
+        prod.availableForSale = prod.variants.every(isAvailable);
         prod.isWhole = true;
-      } else if (currentProduct.variants) prod.availableForSale = !prod.variants.edges.every(isNotAvailable);
-      prod.variants = prod.variants.edges.filter((edge) => edge.node.availableForSale);
+      } else if (currentProduct.variants) prod.availableForSale = !prod.variants.every(isNotAvailable);
       if (currentProduct.oneCard && prod.variants.length > 1) prod.oneCard = true;
     }
   });
