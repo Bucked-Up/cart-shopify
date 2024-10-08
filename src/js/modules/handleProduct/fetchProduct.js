@@ -31,9 +31,7 @@ const filterVariants = (data, products, isOrderBump) => {
       if (currentProduct.hasQtty) prod.hasQtty = hasQtty;
       if (currentProduct.noPriceUp) prod.noPriceUp = true;
       if (currentProduct.variants)
-        prod.variants = prod.variants.filter((filteredVariant) =>
-          currentProduct.variants.includes(+filteredVariant.node.id.split("ProductVariant/")[1])
-        );
+        prod.variants = prod.variants.filter((filteredVariant) => currentProduct.variants.includes(+filteredVariant.node.id.split("ProductVariant/")[1]));
       if (currentProduct.variantOf) {
         const mainProd = data.find((prod) => prod.id.includes(currentProduct.variantOf));
         prod.variants.forEach((variant) => {
@@ -115,8 +113,10 @@ const fetchProduct = async ({ products, isOrderBump = false, country }) => {
       if (!prod.noPriceUp)
         for (let key in prod.variants) {
           if (+prod.variants[key].price.amount > minPrice) {
-            const string = ` (+$${(prod.variants[key].price.amount - minPrice).toFixed(2)})`;
+            const plusPrice = (prod.variants[key].price.amount - minPrice).toFixed(2);
+            const string = ` (+$${plusPrice})`;
             prod.variants[key].title = prod.variants[key].title + string;
+            prod.variants[key].plusPrice = plusPrice;
           }
         }
     });

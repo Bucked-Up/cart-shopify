@@ -82,7 +82,7 @@ const shopifyApiCode = async (lpParams) => {
           }
         });
         btnData = increasedData;
-        updateCartProducts(btnData, lpParams.buttons[btn.id].discountCode, btnProducts, lpParams);
+        updateCartProducts(btnData, lpParams.buttons[btn.id].discountCode, btnProducts, lpParams.buttons[btn.id].prices);
       });
     });
   }

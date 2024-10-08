@@ -1,6 +1,64 @@
 import buy from "./buy.js";
 
-const createInputRadio = ({ productId, variantId, text, variantPrice = "", plusPrice = false }) => {
+const addNewPrice = (toBeReplaced, newNumber) => {
+  if (newNumber == 0) {
+    toBeReplaced.innerHTML = "FREE";
+    return;
+  }
+  if (/[0-9]/.test(toBeReplaced.innerHTML)) {
+    toBeReplaced.innerHTML = toBeReplaced.innerHTML.replace(/[0-9.]+/, newNumber);
+  } else {
+    toBeReplaced.innerHTML = `$${newNumber}`;
+  }
+};
+
+const observePlusPrice = (el, func) => {
+  const targetNode = el;
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      if (mutation.type === "attributes" && mutation.attributeName === "plus-price") {
+        func();
+      }
+    });
+  });
+  observer.observe(targetNode, { attributes: true, attributeFilter: ["plus-price"] });
+};
+
+const handleCartPrice = ({ productWrapper, inCartContainer, prod }) => {
+  let prevPrice = 0;
+  const newPriceElement = document.querySelector(".cart__foot__new-price");
+  const oldPriceElement = document.querySelector(".cart__foot__old-price");
+
+  const handleNewPrice = ({ selected, isPlus }) => {
+    const newPriceValue = +newPriceElement?.innerHTML.replace(/[^0-9.]/g, "") || 0;
+    const oldPriceValue = +oldPriceElement?.innerHTML.replace(/[^0-9.]/g, "") || 0;
+    if (isPlus) {
+      addNewPrice(newPriceElement, (newPriceValue + selected).toFixed(2));
+      addNewPrice(oldPriceElement, (oldPriceValue + selected).toFixed(2));
+      return;
+    }
+    addNewPrice(newPriceElement, (newPriceValue - selected).toFixed(2));
+    addNewPrice(oldPriceElement, (oldPriceValue - selected).toFixed(2));
+  };
+
+  const handlePriceObserver = () => {
+    const currentPrice = +productWrapper.getAttribute("plus-price");
+    if (prevPrice && prevPrice !== currentPrice && newPriceElement && oldPriceElement && inCartContainer.querySelector(`[prod-id='${prod.id}']`)) {
+      handleNewPrice({ selected: prevPrice });
+    }
+    if (prevPrice !== currentPrice) {
+      productWrapper.setAttribute("plus-price", currentPrice);
+      prevPrice = currentPrice;
+      if (newPriceElement && oldPriceElement && inCartContainer.querySelector(`[prod-id='${prod.id}']`)) {
+        handleNewPrice({ selected: currentPrice, isPlus: true });
+      }
+    }
+  };
+
+  observePlusPrice(productWrapper, handlePriceObserver);
+};
+
+const createInputRadio = ({ productId, variantId, text, variantPrice = "", plusPrice = false, variantPlusPrice }) => {
   const wrapper = document.createElement("div");
   const label = document.createElement("label");
   const labelText = document.createElement("span");
@@ -24,6 +82,7 @@ const createInputRadio = ({ productId, variantId, text, variantPrice = "", plusP
 
   input.name = productId;
   input.setAttribute("price", variantPrice);
+  input.setAttribute("plus-price", variantPlusPrice || 0);
   input.setAttribute("label-text", text);
 
   if (plusPrice) {
@@ -71,7 +130,7 @@ const createDropdown = (title) => {
   return dropdown;
 };
 
-const handleSimpleProduct = ({ prod, productInfo, img }) => {
+const handleSimpleProduct = ({ prod, productInfo, img, productWrapper }) => {
   let dropdown = undefined;
   const variantsWrapper = document.createElement("div");
   dropdown = createDropdown(prod.variants[0].title);
@@ -83,19 +142,21 @@ const handleSimpleProduct = ({ prod, productInfo, img }) => {
       variantId: variant.id,
       text: variant.title,
       variantPrice: variant.price.amount,
+      variantPlusPrice: variant.plusPrice,
     });
     variantsWrapper.appendChild(wrapper);
     variantsWrapper.querySelector("input").checked = true;
-    button.addEventListener("change", () => {
+    button.addEventListener("change", function () {
       img.src = variant.image.src;
       img.alt = variant.title;
       dropdown.querySelector("p").innerHTML = button.getAttribute("label-text");
+      productWrapper.setAttribute("plus-price", this.getAttribute("plus-price"));
     });
   });
   dropdown.appendChild(variantsWrapper);
 };
 
-const handleComplexProduct = ({ prod, productInfo, img }) => {
+const handleComplexProduct = ({ prod, productInfo, img, productWrapper }) => {
   const primaryOption = prod.options[0];
   const secondaryOption = prod.options[1];
   primaryOption.values = primaryOption.values.filter((value) => {
@@ -161,17 +222,26 @@ const handleComplexProduct = ({ prod, productInfo, img }) => {
   const updateSecondaryOptions = (primarySelected) => {
     const prevSelected = secondaryVariantsWrapper.querySelector(["input:checked"]);
     secondaryVariantsWrapper.innerHTML = "";
+    productWrapper.setAttribute("plus-price", 0);
     placeHolders.forEach((placeholder) => secondaryVariantsWrapper.appendChild(placeholder));
     prod.variants.forEach((variant) => {
       const newValue = variant.selectedOptions[1].value;
       const plusPrice = findPlusPrice(newValue, prod.variants);
       if (variant.title.includes(primarySelected) && !secondaryVariantsWrapper.querySelector("label")?.innerHTML.includes(newValue)) {
-        const [wrapper, button] = createInputRadio({ productId: secondaryOption.id, variantId: newValue, text: getNewName(newValue), plusPrice: plusPrice });
-        button.addEventListener("change", () => {
+        const [wrapper, button] = createInputRadio({
+          productId: secondaryOption.id,
+          variantId: newValue,
+          text: getNewName(newValue),
+          plusPrice: plusPrice,
+          variantPlusPrice: variant.plusPrice,
+        });
+        button.addEventListener("change", function () {
+          productWrapper.setAttribute("plus-price", this.getAttribute("plus-price"));
           secondaryVariantsWrapper.classList.remove("shake");
         });
         if (prevSelected?.value === newValue) {
           button.checked = true;
+          productWrapper.setAttribute("plus-price", button.getAttribute("plus-price"));
         }
         const placeholder = placeHolders.find((placeHolder) => placeHolder.querySelector(`[size="${getNewName(newValue)}"]`));
         secondaryVariantsWrapper.insertBefore(wrapper, placeholder);
@@ -282,7 +352,7 @@ const handleOneCardProduct = ({ productInfo }) => {
   productInfo.appendChild(placeHoldersDiv);
 };
 
-const createPlaceholders = ({ prod, selectionDiv }) => {
+const createPlaceholders = ({ prod, selectionDiv, productWrapper }) => {
   selectionDiv = document.createElement("div");
   selectionDiv.classList.add("cart__variant-selection");
   const title = document.createElement("p");
@@ -299,8 +369,12 @@ const createPlaceholders = ({ prod, selectionDiv }) => {
       if (btn.parentElement.classList.contains("cart__variant-selection__container")) {
         const placeholder = prodContainer.querySelector('.cart__variant-placeholder:not([style*="display: none"])');
         const firstChild = prodContainer.querySelector("*");
+        const prevPlusPrice = +productWrapper.getAttribute("plus-price");
+        productWrapper.setAttribute("plus-price", prevPlusPrice + +(variant.plusPrice || 0))
         const clone = btn.cloneNode(true);
         clone.addEventListener("click", () => {
+          const prevPlusPrice = +productWrapper.getAttribute("plus-price");
+          productWrapper.setAttribute("plus-price", prevPlusPrice - +(variant.plusPrice || 0))
           prodContainer.querySelector('.cart__variant-placeholder[style*="display: none"]').style.display = "";
           selectionDiv.style.display = "";
           clone.remove();
@@ -315,21 +389,39 @@ const createPlaceholders = ({ prod, selectionDiv }) => {
   return selectionDiv;
 };
 
-const createBumpAddButton = ({ data, container, wrapper, inCartContainer, prod, price, lpParams, cartTitle }) => {
+const createBumpAddButton = ({ data, container, wrapper, inCartContainer, prod, price, lpParams }) => {
+  const newPriceElement = document.querySelector(".cart__foot__new-price");
+  const oldPriceElement = document.querySelector(".cart__foot__old-price");
+
   const isIncrease = typeof prod === "string" && prod === "increase";
   const addButton = document.createElement("button");
   addButton.classList.add("add-button");
   addButton.innerHTML = `Add to cart for only +$${price}`;
+
+  const handleAddButtonText = () => {
+    if (addButton.classList.contains("bump-added")) return;
+    addButton.innerHTML = `Add to cart for only +$${price + +wrapper.getAttribute("plus-price")}`;
+  };
+  observePlusPrice(wrapper, handleAddButtonText);
+
   const getOrderBumpIncreaseProds = () => data.filter((prod) => !lpParams.bump.products["increase"].discart?.includes(+prod.id));
   addButton.addEventListener("click", () => {
+    const plusPrice = wrapper.getAttribute("plus-price");
+    const totalPrice = price + +plusPrice;
+    const newPriceValue = +newPriceElement?.innerHTML.replace(/[^0-9.]/g, "") || 0;
+    const oldPriceValue = +oldPriceElement?.innerHTML.replace(/[^0-9.]/g, "") || 0;
     if (addButton.classList.contains("bump-added")) {
       addButton.classList.remove("bump-added");
-      addButton.innerHTML = `Add to cart for only +$${price}`;
+      addButton.innerHTML = `Add to cart for only +$${price + +wrapper.getAttribute("plus-price")}`;
       container.appendChild(wrapper);
       if (isIncrease) {
         document.querySelectorAll("[bump-increase-qtty-input]").forEach((input) => input.remove());
       } else {
         data.splice(data.indexOf(prod), 1);
+      }
+      if (newPriceElement && oldPriceElement) {
+        addNewPrice(newPriceElement, (newPriceValue - totalPrice).toFixed(2));
+        addNewPrice(oldPriceElement, (oldPriceValue - totalPrice).toFixed(2));
       }
     } else {
       if (isIncrease) {
@@ -347,6 +439,10 @@ const createBumpAddButton = ({ data, container, wrapper, inCartContainer, prod, 
       addButton.classList.add("bump-added");
       addButton.innerHTML = "Added to card";
       inCartContainer.appendChild(wrapper);
+      if (newPriceElement && oldPriceElement) {
+        addNewPrice(newPriceElement, (newPriceValue + totalPrice).toFixed(2));
+        addNewPrice(oldPriceElement, (oldPriceValue + totalPrice).toFixed(2));
+      }
     }
   });
   return addButton;
@@ -354,6 +450,7 @@ const createBumpAddButton = ({ data, container, wrapper, inCartContainer, prod, 
 
 const createProduct = ({ prod, isVariant, isOrderBump, orderBumpsContainer, inCartContainer, quantity, lpParams, data }) => {
   let prevProdWrapper;
+  const productWrapper = document.createElement("div");
   if (prod !== "increase") prevProdWrapper = document.querySelector(`[prod-id="${prod.id.split("id")[0]}"]`);
   let selectionDiv = undefined;
   if (prod.oneCard && !prod.isWhole) {
@@ -361,6 +458,7 @@ const createProduct = ({ prod, isVariant, isOrderBump, orderBumpsContainer, inCa
       selectionDiv = createPlaceholders({
         prod,
         selectionDiv,
+        productWrapper
       });
     } else if (prod.oneCard) {
       increasePlaceholders(prevProdWrapper);
@@ -368,9 +466,10 @@ const createProduct = ({ prod, isVariant, isOrderBump, orderBumpsContainer, inCa
     }
   }
 
-  const productWrapper = document.createElement("div");
   productWrapper.classList.add("cart__product");
   if (prod !== "increase") productWrapper.setAttribute("prod-id", isVariant ? isVariant.id : prod.id.split("id")[0]);
+
+  handleCartPrice({ productWrapper, inCartContainer, prod });
 
   const productContainer = document.createElement("div");
   productContainer.classList.add("cart__product__container");
@@ -431,9 +530,9 @@ const createProduct = ({ prod, isVariant, isOrderBump, orderBumpsContainer, inCa
 
   productContainer.appendChild(productInfo);
   if (prod !== "increase" && !isVariant && prod.variants.length > 1 && !prod.isWhole) {
-    if (prod.options.length > 1) handleComplexProduct({ prod, productInfo, img });
-    else if (!prod.oneCard) handleSimpleProduct({ prod, productInfo, img });
-    else handleOneCardProduct({ prod, productInfo });
+    if (prod.options.length > 1) handleComplexProduct({ prod, productInfo, img, productWrapper });
+    else if (!prod.oneCard) handleSimpleProduct({ prod, productInfo, img, productWrapper });
+    else handleOneCardProduct({ prod, productInfo, productWrapper });
   }
   if (isOrderBump) {
     const addWrapper = document.createElement("div");
@@ -506,6 +605,7 @@ const createCart = (data, orderBumpData, lpParams) => {
         }
       }
       document.querySelectorAll("[bump-increase-qtty-input]").forEach((input) => input.remove());
+      document.querySelector(".cart__foot__price-div-wrapper")?.remove();
       cartWrapper.classList.toggle("active");
       document.body.classList.toggle("no-scroll");
     });
@@ -513,6 +613,28 @@ const createCart = (data, orderBumpData, lpParams) => {
 
   const cartFoot = document.createElement("div");
   cartFoot.classList.add("cart__foot");
+
+  const priceDivWrapper = document.createElement("div");
+  priceDivWrapper.classList.add("cart__foot__price-div-wrapper");
+
+  const totalText = document.createElement("p");
+  totalText.innerHTML = "Total: ";
+  totalText.classList.add("cart__foot__total-text");
+
+  const oldNewPriceWrapper = document.createElement("div");
+  oldNewPriceWrapper.classList.add("cart__foot__price-div");
+
+  const oldPrice = document.createElement("p");
+  oldPrice.classList.add("cart__foot__old-price");
+
+  const newPrice = document.createElement("p");
+  newPrice.classList.add("cart__foot__new-price");
+
+  priceDivWrapper.appendChild(totalText);
+  priceDivWrapper.appendChild(oldNewPriceWrapper);
+
+  oldNewPriceWrapper.appendChild(oldPrice);
+  oldNewPriceWrapper.appendChild(newPrice);
 
   let buyButton = document.createElement("button");
   buyButton.classList.add("buy-button");
@@ -532,24 +654,25 @@ const createCart = (data, orderBumpData, lpParams) => {
     return elClone;
   };
 
-  const createMultiBumpWrapper = ({ data, container, inCartContainer, prod }) => {
-    const multiBumpWrapper = document.createElement("div");
-    multiBumpWrapper.classList.add("cart__order-bumps-container__multi-bump-wrapper");
-    const button = createBumpAddButton({ data, container, wrapper: multiBumpWrapper, inCartContainer, prod, price: lpParams.bump.price });
-    return [multiBumpWrapper, button];
-  };
-
   const titleDiv = document.createElement("div");
   titleDiv.classList.add("cart__title-div");
   const title = document.createElement("p");
   title.innerHTML = "YOU MAY ALSO LIKE";
   titleDiv.appendChild(title);
 
-  const updateCartProducts = (data, btnDiscount, btnProducts) => {
+  const updateCartProducts = (data, btnDiscount, btnProducts, btnPrices) => {
     inCartContainer.innerHTML = "";
     orderBumpsContainer.innerHTML = "";
     orderBumpsContainer.appendChild(titleDiv);
     buyButton = replaceElement(buyButton);
+
+    if (lpParams.prices || btnPrices) {
+      const actualPrices = btnPrices || lpParams.prices;
+      oldPrice.innerHTML = actualPrices.old;
+      newPrice.innerHTML = actualPrices.new;
+      cartFoot.insertBefore(priceDivWrapper, cartFoot.querySelector("*"));
+    }
+
     data.forEach((prod) => {
       const quantity = (btnProducts && btnProducts[prod.id]?.quantity) || lpParams.products[prod.id]?.quantity;
       if (prod.isWhole && !prod.oneCard) {
@@ -564,7 +687,7 @@ const createCart = (data, orderBumpData, lpParams) => {
           );
         });
       } else {
-        const prodCard = createProduct({ prod, quantity, lpParams, data });
+        const prodCard = createProduct({ prod, quantity, lpParams, data, inCartContainer });
         if (prodCard) inCartContainer.appendChild(prodCard);
       }
     });

@@ -39,16 +39,30 @@
       9037941342514: { title: "First, Choose Your Premium Flag Tee" },
       9123402547506: { title: "Next, Choose Your Perfect Shaker Bottle" },
       8685143195954: { title: "And Here Is Your Kickstart Sampler Which Includes 5 Top Selling Formulas!" },
-    }, bump: {
+      8685142376754: {oneCard: true,quantity: 3},
+    },
+    bump: {
       products: {
-        8685142376754: { title: "Add 30 Servings of Pre-Workout for 20% OFF & Receive Free Shipping on Your Entire Order!" }
+        8685142376754: { title: "<b style='font-size:20px;color: red;'>WANT FREE SHIPPING?</b><br>Add 30 servings of<br>Pre-Workout for 20% OFF" }
       },
+      oldPrice: 50.99,
       price: 39.99,
       discountCode: "FULLSIZEPRE20-PREFREESHIPPING"
-
     },
+    //prices on buttons get priority
+    // prices: {
+    //   old: "$17.92",
+    //   new: "$2.99",
+    // },
     buttons: {
-      "btn-1": {},
+      "btn-1": {
+        prices: {
+          old: "$17.93",
+          new: "FREE",
+        }
+      },
+      "btn-2": {
+      },
     },
     discountCode: "ksfb4",
   });
