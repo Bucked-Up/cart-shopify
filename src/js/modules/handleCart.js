@@ -315,7 +315,7 @@ const createPlaceholders = ({ prod, selectionDiv }) => {
   return selectionDiv;
 };
 
-const createBumpAddButton = ({ data, container, wrapper, inCartContainer, prod, price, lpParams }) => {
+const createBumpAddButton = ({ data, container, wrapper, inCartContainer, prod, price, lpParams, cartTitle }) => {
   const isIncrease = typeof prod === "string" && prod === "increase";
   const addButton = document.createElement("button");
   addButton.classList.add("add-button");
@@ -472,16 +472,17 @@ const createCart = (data, orderBumpData, lpParams) => {
   document.body.appendChild(cartWrapper);
 
   const cartHead = document.createElement("div");
+  const cartIcon = document.createElement("p");
   const cartTitle = document.createElement("p");
+  cartTitle.classList.add("cart__head__title");
   const closeCartButton = document.createElement("button");
   cartHead.classList.add("cart__head");
-  cartTitle.classList.add("cart__head__title");
   closeCartButton.classList.add("cart__head__close-button");
-  cartTitle.innerHTML = `
-  <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24"><path d="M280-80q-33 0-56.5-23.5T200-160q0-33 23.5-56.5T280-240q33 0 56.5 23.5T360-160q0 33-23.5 56.5T280-80Zm400 0q-33 0-56.5-23.5T600-160q0-33 23.5-56.5T680-240q33 0 56.5 23.5T760-160q0 33-23.5 56.5T680-80ZM208-800h590q23 0 35 20.5t1 41.5L692-482q-11 20-29.5 31T622-440H324l-44 80h480v80H280q-45 0-68-39.5t-2-78.5l54-98-144-304H40v-80h130l38 80Z"/></svg>
-  Cart`;
+  cartIcon.innerHTML = `
+  <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24"><path d="M280-80q-33 0-56.5-23.5T200-160q0-33 23.5-56.5T280-240q33 0 56.5 23.5T360-160q0 33-23.5 56.5T280-80Zm400 0q-33 0-56.5-23.5T600-160q0-33 23.5-56.5T680-240q33 0 56.5 23.5T760-160q0 33-23.5 56.5T680-80ZM208-800h590q23 0 35 20.5t1 41.5L692-482q-11 20-29.5 31T622-440H324l-44 80h480v80H280q-45 0-68-39.5t-2-78.5l54-98-144-304H40v-80h130l38 80Z"/></svg>`;
   closeCartButton.innerHTML =
     '<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg>';
+  cartHead.appendChild(cartIcon);
   cartHead.appendChild(cartTitle);
   cartHead.appendChild(closeCartButton);
   cart.append(cartHead);
@@ -577,6 +578,15 @@ const createCart = (data, orderBumpData, lpParams) => {
     });
     cartWrapper.classList.toggle("active");
     document.body.classList.toggle("no-scroll");
+
+    const updateCartTitle = () => {
+      cartTitle.innerHTML = `SHOPPING CART (${inCartContainer.childElementCount})`;
+    };
+    const observer = new MutationObserver(() => {
+      updateCartTitle();
+    });
+    observer.observe(inCartContainer, { childList: true });
+    updateCartTitle();
   };
 
   return updateCartProducts;
