@@ -28,26 +28,29 @@
 <script type="module">
   import shopifyApiCode from "./src/js/scripts.js"
   shopifyApiCode({
-      noCart: false,
-      isBenSys: {},
-      country: "au",
-      dataLayer: {
-        step_count: "lp",
-        page_id: "OG-LP-OPS",
-        version_id: "AUFLAMB",
-      },
+    noCart: false,
+    country: "us",
+    dataLayer: {
+      step_count: "",
+      page_id: "ksfb4",
+      version_id: "KS - FB - LP - V4",
+    },
+    products: {
+      9037941342514: { title: "First, Choose Your Premium Flag Tee" },
+      9123402547506: { title: "Next, Choose Your Perfect Shaker Bottle" },
+      8685143195954: { title: "And Here Is Your Kickstart Sampler Which Includes 5 Top Selling Formulas!" },
+    }, bump: {
       products: {
-        1596: {
-          oneCard: true,
-          quantity: 10,
-          title: "Stick Packs"
-        },
-        1506: {title: "Perfect Shaker Bottle"},
+        8685142376754: { title: "Add 30 Servings of Pre-Workout for 20% OFF & Receive Free Shipping on Your Entire Order!" }
       },
-      buttons: {
-        "btn-1": {},
-      },
-      discountCode: "AUFLAMB",
-    });
+      price: 39.99,
+      discountCode: "FULLSIZEPRE20-PREFREESHIPPING"
+
+    },
+    buttons: {
+      "btn-1": {},
+    },
+    discountCode: "ksfb4",
+  });
 
 </script>

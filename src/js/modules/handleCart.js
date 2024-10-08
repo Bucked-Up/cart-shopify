@@ -492,15 +492,8 @@ const createCart = (data, orderBumpData, lpParams) => {
   productsContainer.classList.add("cart__prod-container");
   inCartContainer.classList.add("cart__in-cart-container");
   orderBumpsContainer.classList.add("cart__order-bumps-container");
-  const bumpAtTop = lpParams.bumpAtTop;
-  if (bumpAtTop) {
-    orderBumpsContainer.classList.add("at-top");
-    productsContainer.appendChild(orderBumpsContainer);
-    productsContainer.appendChild(inCartContainer);
-  } else {
-    productsContainer.appendChild(inCartContainer);
-    productsContainer.appendChild(orderBumpsContainer);
-  }
+  productsContainer.appendChild(inCartContainer);
+  productsContainer.appendChild(orderBumpsContainer);
   cart.appendChild(productsContainer);
 
   [cartOverlay, closeCartButton].forEach((el) => {
@@ -545,9 +538,16 @@ const createCart = (data, orderBumpData, lpParams) => {
     return [multiBumpWrapper, button];
   };
 
+  const titleDiv = document.createElement("div");
+  titleDiv.classList.add("cart__title-div");
+  const title = document.createElement("p");
+  title.innerHTML = "YOU MAY ALSO LIKE";
+  titleDiv.appendChild(title);
+
   const updateCartProducts = (data, btnDiscount, btnProducts) => {
     inCartContainer.innerHTML = "";
     orderBumpsContainer.innerHTML = "";
+    orderBumpsContainer.appendChild(titleDiv);
     buyButton = replaceElement(buyButton);
     data.forEach((prod) => {
       const quantity = (btnProducts && btnProducts[prod.id]?.quantity) || lpParams.products[prod.id]?.quantity;
