@@ -370,11 +370,11 @@ const createPlaceholders = ({ prod, selectionDiv, productWrapper }) => {
         const placeholder = prodContainer.querySelector('.cart__variant-placeholder:not([style*="display: none"])');
         const firstChild = prodContainer.querySelector("*");
         const prevPlusPrice = +productWrapper.getAttribute("plus-price");
-        productWrapper.setAttribute("plus-price", prevPlusPrice + +(variant.plusPrice || 0))
+        productWrapper.setAttribute("plus-price", prevPlusPrice + +(variant.plusPrice || 0));
         const clone = btn.cloneNode(true);
         clone.addEventListener("click", () => {
           const prevPlusPrice = +productWrapper.getAttribute("plus-price");
-          productWrapper.setAttribute("plus-price", prevPlusPrice - +(variant.plusPrice || 0))
+          productWrapper.setAttribute("plus-price", prevPlusPrice - +(variant.plusPrice || 0));
           prodContainer.querySelector('.cart__variant-placeholder[style*="display: none"]').style.display = "";
           selectionDiv.style.display = "";
           clone.remove();
@@ -458,7 +458,7 @@ const createProduct = ({ prod, isVariant, isOrderBump, orderBumpsContainer, inCa
       selectionDiv = createPlaceholders({
         prod,
         selectionDiv,
-        productWrapper
+        productWrapper,
       });
     } else if (prod.oneCard) {
       increasePlaceholders(prevProdWrapper);
@@ -560,15 +560,20 @@ const createProduct = ({ prod, isVariant, isOrderBump, orderBumpsContainer, inCa
 };
 
 const createCart = (data, orderBumpData, lpParams) => {
+  const domCartContainer = document.querySelector("[cart-container]") || false;
   const cartWrapper = document.createElement("div");
   const cartOverlay = document.createElement("div");
   const cart = document.createElement("div");
   cartWrapper.classList.add("cart-wrapper");
   cartOverlay.classList.add("cart-overlay");
   cart.classList.add("cart");
-  cartWrapper.appendChild(cartOverlay);
-  cartWrapper.appendChild(cart);
-  document.body.appendChild(cartWrapper);
+  if (domCartContainer) {
+    domCartContainer.appendChild(cart);
+  } else {
+    cartWrapper.appendChild(cartOverlay);
+    cartWrapper.appendChild(cart);
+    document.body.appendChild(cartWrapper);
+  }
 
   const cartHead = document.createElement("div");
   const cartIcon = document.createElement("p");
@@ -581,10 +586,13 @@ const createCart = (data, orderBumpData, lpParams) => {
   <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24"><path d="M280-80q-33 0-56.5-23.5T200-160q0-33 23.5-56.5T280-240q33 0 56.5 23.5T360-160q0 33-23.5 56.5T280-80Zm400 0q-33 0-56.5-23.5T600-160q0-33 23.5-56.5T680-240q33 0 56.5 23.5T760-160q0 33-23.5 56.5T680-80ZM208-800h590q23 0 35 20.5t1 41.5L692-482q-11 20-29.5 31T622-440H324l-44 80h480v80H280q-45 0-68-39.5t-2-78.5l54-98-144-304H40v-80h130l38 80Z"/></svg>`;
   closeCartButton.innerHTML =
     '<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg>';
-  cartHead.appendChild(cartIcon);
-  cartHead.appendChild(cartTitle);
-  cartHead.appendChild(closeCartButton);
-  cart.append(cartHead);
+
+  if (!domCartContainer) {
+    cartHead.appendChild(cartIcon);
+    cartHead.appendChild(cartTitle);
+    cartHead.appendChild(closeCartButton);
+    cart.append(cartHead);
+  }
 
   const productsContainer = document.createElement("div");
   const inCartContainer = document.createElement("div");
@@ -700,7 +708,7 @@ const createCart = (data, orderBumpData, lpParams) => {
       const result = await buy({ data, btnDiscount, lpParams, btnProducts });
     });
     cartWrapper.classList.toggle("active");
-    document.body.classList.toggle("no-scroll");
+    if (!domCartContainer) document.body.classList.toggle("no-scroll");
 
     const updateCartTitle = () => {
       cartTitle.innerHTML = `SHOPPING CART (${inCartContainer.childElementCount})`;

@@ -165,6 +165,11 @@ prices: {
 },
 ```
 
+you can add the cart to to some element on the page like so:
+```
+<div cart-container></div>
+```
+
 ## How to compile scss
 
 ### either install the compiler from the sass website, or install the vscode extension live sass compiler.
