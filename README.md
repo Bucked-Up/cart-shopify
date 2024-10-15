@@ -141,6 +141,30 @@ buttons: {
 },
 ```
 
+You can add pricing to the cart
+ex:
+
+```
+bump: {
+  products: {
+    8685142376754: { title: "<b style='font-size:20px;color: red;'>WANT FREE SHIPPING?</b><br>Add 30 servings of<br>Pre-Workout for 20% OFF" }
+  },
+  oldPrice: 50.99,
+  price: 39.99,
+  discountCode: "FULLSIZEPRE20-PREFREESHIPPING"
+},
+prices: {
+  old: "$17.92",
+  new: "$2.99",
+},
+"btn-1": {
+  prices: {
+    old: "$17.93",
+    new: "FREE",
+  }
+},
+```
+
 ## How to compile scss
 
 ### either install the compiler from the sass website, or install the vscode extension live sass compiler.
