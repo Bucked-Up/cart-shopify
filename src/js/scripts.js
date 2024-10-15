@@ -42,7 +42,7 @@ const shopifyApiCode = async (lpParams) => {
   }
   dataLayerStart(lpParams.dataLayer, data, lpParams.discountCode);
   const buttons = Object.keys(lpParams.buttons).map((id) => document.getElementById(id));
-  if (buttons.some(dontExist)) {
+  if (buttons.some(dontExist) && !cartContainer) {
     trySentry({ message: "Wrong button id." });
     handleError();
     return;
