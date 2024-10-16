@@ -8,7 +8,7 @@
 <script>
   document.head.appendChild(Object.assign(document.createElement("link"), {
     rel: "stylesheet",
-    href: `https://cdn.jsdelivr.net/gh/Bucked-Up/cart-shopify@2/src/scss/style.css?t=${Math.floor(Date.now()/3600000)}`
+    href: `https://cdn.jsdelivr.net/gh/Bucked-Up/cart-shopify@2/src/scss/style.css?cb=${Math.floor(Date.now()/600000)}`
   }));
 </script>
 ```
@@ -24,10 +24,10 @@
 ### 2. Place this code and change as necessary into html/css footer
 
 ```
-<script type="module">
-  const handleShopifyApi = async () => {
-    const { default: shopifyApiCode } = await import(`https://cdn.jsdelivr.net/gh/Bucked-Up/cart-shopify@2/src/js/scripts.js?t=${Math.floor(Date.now() / 3600000)}`);
-    shopifyApiCode({
+<script>
+  document.head.appendChild(Object.assign(document.createElement("script"), {
+    src: `https://cdn.jsdelivr.net/gh/Bucked-Up/cart-shopify@2/cart-shopify.min.js?cb=${Math.floor(Date.now() / 600000)}`,
+    onload: () => shopifyApiCode({
       noCart: false,
       country: "us",
       dataLayer: {
@@ -48,13 +48,12 @@
         discountCode: "testBump",
       },
       buttons: {
-        "BTN-1": {},
-        "BTN-2": {},
+        "btn-1": {},
+        "btn-2": {},
       },
       discountCode: "test",
-    });
-  }
-  handleShopifyApi();
+    })
+  }));
 </script>
 ```
 
