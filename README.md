@@ -169,6 +169,15 @@ you can add the cart to to some element on the page like so:
 <div cart-container></div>
 ```
 
+You can have optional product along with the noCart option like so:
+```
+<img optional-prod-img="9123402547506">
+<div optional-prod-selector-wrapper="9123402547506">
+
+</div>
+9123402547506: { isOptional: true },
+```
+
 ## How to compile scss
 
 ### either install the compiler from the sass website, or install the vscode extension live sass compiler.

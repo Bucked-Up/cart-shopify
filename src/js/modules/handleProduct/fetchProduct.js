@@ -1,4 +1,5 @@
 import { handleFetch, trySentry } from "../../variables.js";
+import { handleOptionalProduct } from "../handleCart.js";
 
 const filterVariants = (data, products, isOrderBump) => {
   const ids = Object.keys(products);
@@ -28,6 +29,7 @@ const filterVariants = (data, products, isOrderBump) => {
     if (Object.keys(products).length > 0) {
       prod.variants = prod.variants.edges.filter((edge) => edge.node.availableForSale);
       if (currentProduct.title) prod.title = currentProduct.title;
+      if (currentProduct.isOptional) prod.isOptional = currentProduct.isOptional;
       if (currentProduct.hasQtty) prod.hasQtty = hasQtty;
       if (currentProduct.noPriceUp) prod.noPriceUp = true;
       if (currentProduct.variants)
@@ -119,6 +121,7 @@ const fetchProduct = async ({ products, isOrderBump = false, country }) => {
             prod.variants[key].plusPrice = plusPrice;
           }
         }
+      if (prod.isOptional) handleOptionalProduct({ prod });
     });
     return data;
   } catch (error) {

@@ -7,7 +7,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+    rel="stylesheet">
   <!-- STYLE AND SCRIPTS -->
   <link rel="stylesheet" href="./src/scss/style.css">
   <title>Document</title>
@@ -20,53 +22,37 @@
     <button id="btn-3">3</button>
     <button id="btn-4">4</button>
 
-    <div >
+    <img optional-prod-img="9123402547506">
+    <div optional-prod-selector-wrapper="9123402547506">
 
     </div>
   </div>
 </body>
 
 </html>
-<script src="cart-shopify.min.js"></script>
-<script>
-  shopifyApiCode({
-    noCart: false,
-    country: "us",
-    dataLayer: {
-      step_count: "",
-      page_id: "ksfb4",
-      version_id: "KS - FB - LP - V4",
-    },
-    products: {
-      9037941342514: { title: "First, Choose Your Premium Flag Tee" },
-      9123402547506: { title: "Next, Choose Your Perfect Shaker Bottle" },
-      8685143195954: { title: "And Here Is Your Kickstart Sampler Which Includes 5 Top Selling Formulas!" },
-      8685142376754: { oneCard: true, quantity: 3 },
-    },
-    bump: {
-      products: {
-        8685142376754: { title: "<b style='font-size:20px;color: red;'>WANT FREE SHIPPING?</b><br>Add 30 servings of<br>Pre-Workout for 20% OFF" }
-      },
-      oldPrice: 50.99,
-      price: 39.99,
-      discountCode: "FULLSIZEPRE20-PREFREESHIPPING"
-    },
-    // prices on buttons get priority
-    // prices: {
-    //   old: "$17.92",
-    //   new: "$2.99",
-    // },
-    buttons: {
-      "btn-1": {
-        prices: {
-          old: "$17.93",
-          new: "FREE",
-        }
-      },
-      "btn-2": {
-      },
-    },
-    discountCode: "ksfb4",
-  });
 
+<script>
+  document.head.appendChild(Object.assign(document.createElement("script"), {
+    src: `cart-shopify.min.js`,
+    type: "module",
+    onload: () => shopifyApiCode({
+      noCart: true,
+      country: "us",
+      dataLayer: {
+        step_count: "lp",
+        page_id: "FEEDS - FB - LP - V1",
+        version_id: "FBV1",
+      },
+      products: {
+        9647917728050: {},
+        9627525447986: {},
+        9123402547506: { isOptional: true },
+      },
+      buttons: {
+        "btn-1": { products: { 9647917728050: {}, 9627525447986: {} } },
+        "btn-2": {},
+      },
+      discountCode: "FEEDSFB1",
+    })
+  }));
 </script>

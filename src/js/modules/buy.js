@@ -147,7 +147,7 @@ const buy = async ({ data, btnDiscount, lpParams, noCart, btnProducts }) => {
             return { id: variant.id, quantity: variantQuantity, prod: product };
           })
         );
-      } else if (product.variants.length > 1 && !noCart) {
+      } else if (product.variants.length > 1 && (!noCart || noCart && product.isOptional)) {
         const selectedVariant = getVariantId(product);
         if (!selectedVariant.result) {
           alert(selectedVariant.message);

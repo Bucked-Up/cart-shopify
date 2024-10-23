@@ -18,12 +18,13 @@
   }
 }
 
-.cart {
+.cart, .cart__dropdown {
   p,
   label {
     margin: 0;
   }
   color: black;
+  font-family: Poppins;
 }
 
 .cart-wrapper {
@@ -69,7 +70,6 @@
 .cart {
   background-color: white;
   padding: 1rem 0.5rem 0 0.5rem;
-  font-family: Poppins;
   &__head {
     font-weight: 700;
     font-size: 0.875rem;

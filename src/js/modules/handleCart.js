@@ -130,11 +130,9 @@ const createDropdown = (title) => {
   return dropdown;
 };
 
-const handleSimpleProduct = ({ prod, productInfo, img, productWrapper }) => {
-  let dropdown = undefined;
+const createProductBase = ({ prod, img, productWrapper }) => {
   const variantsWrapper = document.createElement("div");
-  dropdown = createDropdown(prod.variants[0].title);
-  productInfo.appendChild(dropdown);
+  const dropdown = createDropdown(prod.variants[0].title);
   variantsWrapper.classList.add("cart__dropdown__variants");
   prod.variants.forEach((variant) => {
     const [wrapper, button] = createInputRadio({
@@ -150,10 +148,25 @@ const handleSimpleProduct = ({ prod, productInfo, img, productWrapper }) => {
       img.src = variant.image.src;
       img.alt = variant.title;
       dropdown.querySelector("p").innerHTML = button.getAttribute("label-text");
-      productWrapper.setAttribute("plus-price", this.getAttribute("plus-price"));
+      productWrapper && productWrapper.setAttribute("plus-price", this.getAttribute("plus-price"));
     });
   });
   dropdown.appendChild(variantsWrapper);
+  return dropdown;
+};
+
+const handleSimpleProduct = ({ prod, productInfo, img, productWrapper }) => {
+  const dropdown = createProductBase({ prod, img, productWrapper });
+  productInfo.appendChild(dropdown);
+};
+
+const handleOptionalProduct = ({ prod }) => {
+  const img = document.querySelector(`[optional-prod-img="${prod.id}"]`);
+  img.src = prod.variants[0].image.src;
+  const selectorWrapper = document.querySelector(`[optional-prod-selector-wrapper="${prod.id}"]`);
+
+  const dropdown = createProductBase({ prod, img });
+  selectorWrapper.appendChild(dropdown);
 };
 
 const handleComplexProduct = ({ prod, productInfo, img, productWrapper }) => {
@@ -723,4 +736,4 @@ const createCart = (data, orderBumpData, lpParams) => {
   return updateCartProducts;
 };
 
-export { createCart };
+export { createCart, handleOptionalProduct };
