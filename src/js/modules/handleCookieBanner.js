@@ -1,4 +1,5 @@
 import { getAccessToken } from "../variables.js";
+import handleIntellimize from "./intellimize.js";
 
 const getCheckoutDomain = (country) => {
   switch (country) {
@@ -21,7 +22,7 @@ const tryFbq = (consent) => {
   }
 };
 
-const tryGtag = ({consent, step}) =>{
+const tryGtag = ({ consent, step }) => {
   try {
     gtag("consent", step, {
       ad_storage: consent,
@@ -37,7 +38,7 @@ const handleCookieBanner = ({ country }) => {
   const STOREFRONT_DOMAIN = "buckedup.com";
   const CHECKOUT_DOMAIN = getCheckoutDomain(country);
   const SF_API_TOKEN = getAccessToken(country);
-  tryGtag({consent: "denied", step: "default"})
+  tryGtag({ consent: "denied", step: "default" })
   try {
     privacyBanner.loadBanner({
       storefrontAccessToken: SF_API_TOKEN,
@@ -48,10 +49,11 @@ const handleCookieBanner = ({ country }) => {
       const eventDetail = event.detail;
       if (eventDetail.analyticsAllowed && eventDetail.thirdPartyMarketingAllowed && eventDetail.saleOfDataAllowed) {
         tryFbq("grant");
-        tryGtag({consent: "granted", step: "update"})
+        tryGtag({ consent: "granted", step: "update" })
+        handleIntellimize();
       } else {
         tryFbq("revoke");
-        tryGtag({consent: "denied", step: "update"})
+        tryGtag({ consent: "denied", step: "update" })
       }
     });
   } catch (err) {

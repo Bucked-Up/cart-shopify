@@ -6,6 +6,7 @@ import buy from "./modules/buy.js";
 import fetchProductBen from "./modules/handleProduct/fetchProductBen.js";
 import handleCookieBanner, { tryFbq } from "./modules/handleCookieBanner.js";
 import { handleError, trySentry } from "./variables.js";
+import handleIntellimize from "./modules/intellimize.js";
 
 const shopifyApiCode = async (lpParams) => {
   window.addEventListener("pageshow", function (event) {
@@ -18,8 +19,13 @@ const shopifyApiCode = async (lpParams) => {
   const cartContainer = document.querySelector("[cart-container]") || false;
   toggleLoading();
   const isBenSys = "isBenSys" in lpParams;
-  if (lpParams.country === "uk") handleCookieBanner({ country: lpParams.country });
-  else tryFbq("grant");
+  if (lpParams.country === "uk"){
+    handleCookieBanner({ country: lpParams.country });
+  } 
+  else{
+    tryFbq("grant");
+    handleIntellimize();
+  } 
   let data, orderBumpData;
   try {
     [data, orderBumpData] = isBenSys

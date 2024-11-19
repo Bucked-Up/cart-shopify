@@ -1,3 +1,14 @@
+const getTopLevelDomain = () => {
+  const fullDomain = window.location.hostname;
+  const domainRegex = /\.([a-z]{2,})\.([a-z]{2,})$/;
+  const match = fullDomain.match(domainRegex);
+  if (match) {
+    return `.${match[1]}.${match[2]}`;
+  } else {
+    return fullDomain;
+  }
+};
+
 const setDataLayer = ({ lpDataLayer, event, action, value, currency }) => {
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push({
@@ -28,16 +39,6 @@ const dataLayerStart = (lpDataLayer, data, discountCode) => {
   const item = { lpDataLayer, event: "pageview", action: "load", value: 0 };
   setDataLayer(item);
 
-  const getTopLevelDomain = () => {
-    const fullDomain = window.location.hostname;
-    const domainRegex = /\.([a-z]{2,})\.([a-z]{2,})$/;
-    const match = fullDomain.match(domainRegex);
-    if (match) {
-      return `.${match[1]}.${match[2]}`;
-    } else {
-      return fullDomain;
-    }
-  };
   const cookieConfig = `path=/; domain=${getTopLevelDomain()};max-age=3600`;
   document.cookie = `offer_id=${discountCode};${cookieConfig}`;
   document.cookie = `page_id=${lpDataLayer.page_id};${cookieConfig}`;
@@ -54,4 +55,4 @@ const dataLayerRedirect = (lpDataLayer, data) => {
   setKlaviyo("User Redirect Engagement", item, titles, lpDataLayer);
 };
 
-export { dataLayerStart, dataLayerRedirect };
+export { dataLayerStart, dataLayerRedirect, getTopLevelDomain };
