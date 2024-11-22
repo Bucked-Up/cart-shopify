@@ -6,23 +6,25 @@ const getCookie = (name) => {
   }
 };
 
-
-const getUserId = (i = 0) => {
+const setUserId = (i = 0) => {
   const userId = getCookie("rl_anonymous_id");
-  if (userId) return userId;
+  if (userId) {
+    const userDomain = "shopifyCheckout";
+    console.log("has set id",userId);
+    intellimize.setUserId(userDomain, userId);
+    return;
+  }
   if (i >= 50) {
     console.warn("no id for intellimize");
     return;
   }
-  setTimeout(() => getUserId(i + 1), 100);
+  setTimeout(() => setUserId(i + 1), 100);
 };
 
 const handleIntellimize = () => {
   try {
     intellimize.ready(function () {
-      const userId = getUserId()
-      const userDomain = "shopifyCheckout";
-      intellimize.setUserId(userDomain, userId);
+      setUserId();
     });
   } catch (e) {
     console.error(e);
