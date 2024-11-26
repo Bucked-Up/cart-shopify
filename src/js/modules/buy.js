@@ -1,6 +1,7 @@
 import toggleLoading from "./toggleLoading.js";
 import { dataLayerRedirect } from "./dataLayer.js";
 import { handleError, handleFetch, trySentry } from "../variables.js";
+import { getUserId } from "./intellimize.js";
 
 const getVariantId = (product, oneCardQuantity) => {
   const primaryWrapper = document.querySelector(`[primary="${product.id}"]`);
@@ -264,6 +265,10 @@ const buy = async ({ data, btnDiscount, lpParams, noCart, btnProducts }) => {
           {
             key: "unique_checkout_id",
             value: `${checkoutId.split("?key=")[1]}`,
+          },
+          {
+            key: "intellimize_user_id",
+            value: getUserId(),
           },
           {
             key: "click_ids",

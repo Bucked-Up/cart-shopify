@@ -1,24 +1,23 @@
-const getCookie = (name) => {
-  const cookies = document.cookie.split(";");
-  for (let cookie of cookies) {
-    const splited = cookie.split("=");
-    if (splited[0].trim() == name) return splited[1];
-  }
-};
+let userId;
+
+const getUserId = () => userId;
 
 const setUserId = (i = 0) => {
-  const userId = getCookie("rl_anonymous_id");
-  if (userId) {
-    const userDomain = "shopifyCheckout";
-    console.log("has set id",userId);
-    intellimize.setUserId(userDomain, userId);
-    return;
+  try {
+    userId = intellimize.getUserId();
+    if (userId) {
+      const userDomain = "shopifyCheckout";
+      intellimize.setUserId(userDomain, userId);
+      return;
+    }
+    if (i >= 50) {
+      console.warn("no id for intellimize");
+      return;
+    }
+    setTimeout(() => setUserId(i + 1), 100);
+  } catch (e) {
+    setTimeout(() => setUserId(i + 1), 100);
   }
-  if (i >= 50) {
-    console.warn("no id for intellimize");
-    return;
-  }
-  setTimeout(() => setUserId(i + 1), 100);
 };
 
 const handleIntellimize = () => {
@@ -32,3 +31,4 @@ const handleIntellimize = () => {
 };
 
 export default handleIntellimize;
+export { getUserId };
