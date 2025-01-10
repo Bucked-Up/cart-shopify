@@ -14,13 +14,13 @@ const getAccessToken = (country) => {
 const getFetchUrl = (country) => {
   switch (country) {
     case "ca":
-      return "https://cad.buckedup.com/api/2021-07/graphql.json";
+      return "https://cad.buckedup.com/api/2025-01/graphql.json";
     case "au":
-      return "https://aud.buckedup.com/api/2021-07/graphql.json";
+      return "https://aud.buckedup.com/api/2025-01/graphql.json";
     case "uk":
-      return "https://gbp.buckedup.com/api/2021-07/graphql.json";
+      return "https://gbp.buckedup.com/api/2025-01/graphql.json";
     default:
-      return "https://secure.buckedup.com/api/2021-07/graphql.json";
+      return "https://secure.buckedup.com/api/2025-01/graphql.json";
   }
 };
 

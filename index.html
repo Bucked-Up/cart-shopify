@@ -36,23 +36,29 @@
     src: `cart-shopify.min.js`,
     type: "module",
     onload: () => shopifyApiCode({
-      noCart: true,
+      noCart: false,
       country: "us",
       dataLayer: {
-        step_count: "lp",
-        page_id: "FEEDS - FB - LP - V1",
-        version_id: "FBV1",
+        step_count: "",
+        page_id: "",
+        version_id: "",
       },
       products: {
-        9647917728050: {},
-        9627525447986: {},
-        9123402547506: { isOptional: true },
+        9729583710514: { title: "First, Choose Your Premium Flag Tee" },
+        9647917564210: { title: "Next, Choose Your Perfect Shaker Bottle" },
+        8685143195954: { title: "BONUS 5 Top Selling Formulas!" },
+      }, bump: {
+        products: {
+          8685142376754: { title: "LIMITED TIME OFFER: 20% OFF 30 Servings of Pre-Workout & FREE SHIPPING On Your Entire Order!" }
+        },
+        price: 39.99,
+        discountCode: "FULLSIZEPRE20-PREFREESHIPPING"
+
       },
       buttons: {
-        "btn-1": { products: { 9647917728050: {}, 9627525447986: {} } },
-        "btn-2": {},
+        "btn-1": {},
       },
-      discountCode: "FEEDSFB1",
+      discountCode: "ksfb1-asd",
     })
   }));
 </script>

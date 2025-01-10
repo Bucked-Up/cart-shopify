@@ -40,52 +40,17 @@ const getVariantId = (product, oneCardQuantity) => {
   }
 };
 
-const addDiscount = async (checkoutId, code, country) => {
-  const postDiscount = async (code) => {
-    const input = {
-      checkoutId: checkoutId,
-      discountCode: code,
-    };
-    const query = `
-      mutation checkoutDiscountCodeApplyV2($checkoutId: ID!, $discountCode: String!) {
-        checkoutDiscountCodeApplyV2(checkoutId: $checkoutId, discountCode: $discountCode) {
-          checkout {
-            id
-            webUrl
-          }
-        }
-      }
-    `;
-    const body = {
-      query: query,
-      variables: input,
-    };
-    const response = await handleFetch({ body, country });
-    return response;
-  };
-
-  let response;
-  for (let indivCode of code.split("-")) {
-    response = await postDiscount(indivCode);
-    if (!response.ok) return response;
-  }
-
-  return response;
-};
-
-const addCustomAttributes = async (attributes, id, country) => {
+const addAttributes = async (attributes, id, country) => {
   const input = {
-    checkoutId: id,
-    input: {
-      customAttributes: attributes,
-    },
+    input: attributes,
+    cartId: id,
   };
   const query = `
-    mutation checkoutAttributesUpdateV2($checkoutId: ID!, $input: CheckoutAttributesUpdateV2Input!) {
-      checkoutAttributesUpdateV2(checkoutId: $checkoutId, input: $input) {
-        checkout {
+    mutation cartAttributesUpdate($input: [AttributeInput!]!, $cartId: ID!) {
+      cartAttributesUpdate(attributes: $input, cartId: $cartId) {
+        cart {
           id
-          customAttributes {
+          attributes {
             key
             value
           }
@@ -141,14 +106,12 @@ const buy = async ({ data, btnDiscount, lpParams, noCart, btnProducts }) => {
         variantId.push(
           ...product.variants.map((variant) => {
             const prodContainer = document.querySelector(`[prod-id="${product.id.split("id")[0]}"]`);
-            const initialQuantity =
-              +document.getElementById(`${variant.id}-quantity`)?.innerHTML ||
-              prodContainer?.getAttribute(`variant-qtty-${variant.id.split("ProductVariant/")[1] || variant.id.split("option")[0]}`);
+            const initialQuantity = +document.getElementById(`${variant.id}-quantity`)?.innerHTML || prodContainer?.getAttribute(`variant-qtty-${variant.id.split("ProductVariant/")[1] || variant.id.split("option")[0]}`);
             const variantQuantity = inputQtty * (initialQuantity || 1);
             return { id: variant.id, quantity: variantQuantity, prod: product };
           })
         );
-      } else if (product.variants.length > 1 && (!noCart || noCart && product.isOptional)) {
+      } else if (product.variants.length > 1 && (!noCart || (noCart && product.isOptional))) {
         const selectedVariant = getVariantId(product);
         if (!selectedVariant.result) {
           alert(selectedVariant.message);
@@ -165,62 +128,24 @@ const buy = async ({ data, btnDiscount, lpParams, noCart, btnProducts }) => {
   const globalQuantity = +document.getElementById("cart-qtty-input")?.value || 1;
 
   const obj = variantId.map((variant) => {
-    return { variantId: variant.id, quantity: globalQuantity * variant.quantity };
+    return { merchandiseId: variant.id, quantity: globalQuantity * variant.quantity };
   });
   if ("isBenSys" in lpParams) {
     let string = "";
     variantId.forEach((variant, i) => {
       if (variant.prod.isBenSysShirt) {
-        string =
-          string +
-          `&products[${i}][id]=${variant.prod.id.split("id")[0].split("ob")[0]}&products[${i}][quantity]=${variant.quantity}&products[${i}][options][${
-            variant.prod.options[0].id
-          }]=${variant.id.split("-")[0]}&products[${i}][id]=${variant.prod.id.split("id")[0].split("ob")[0]}&products[${i}][quantity]=${
-            variant.quantity
-          }&products[${i}][options][${variant.prod.options[1].id}]=${variant.id.split("-")[1]}`;
+        string = string + `&products[${i}][id]=${variant.prod.id.split("id")[0].split("ob")[0]}&products[${i}][quantity]=${variant.quantity}&products[${i}][options][${variant.prod.options[0].id}]=${variant.id.split("-")[0]}&products[${i}][id]=${variant.prod.id.split("id")[0].split("ob")[0]}&products[${i}][quantity]=${variant.quantity}&products[${i}][options][${variant.prod.options[1].id}]=${variant.id.split("-")[1]}`;
       } else {
         const [variantId, optionID] = variant.id.split("option");
-        string =
-          string +
-          `&products[${i}][id]=${variant.prod.id.split("id")[0].split("ob")[0]}&products[${i}][quantity]=${
-            variant.quantity
-          }&products[${i}][options][${optionID}]=${variantId}`;
+        string = string + `&products[${i}][id]=${variant.prod.id.split("id")[0].split("ob")[0]}&products[${i}][quantity]=${variant.quantity}&products[${i}][options][${optionID}]=${variantId}`;
       }
     });
     dataLayerRedirect(lpParams.dataLayer, data);
     urlParams.set("cc", lpParams.discountCode || urlParams.get("discount"));
-    if (lpParams.country === "uk")
-      window.location.href = `https://www.buckedup.co.uk//cart/add?${string}&clear=true&${urlParams}`;
-    else
-      window.location.href = `https://${
-        lpParams.country && lpParams.country !== "us" ? lpParams.country + "." : ""
-      }buckedup.com/cart/add?${string}&clear=true&${urlParams}`;
+    if (lpParams.country === "uk") window.location.href = `https://www.buckedup.co.uk/cart/add?${string}&clear=true&${urlParams}`;
+    else window.location.href = `https://${lpParams.country && lpParams.country !== "us" ? lpParams.country + "." : ""}buckedup.com/cart/add?${string}&clear=true&${urlParams}`;
   } else {
-    const input = {
-      input: {
-        lineItems: obj,
-      },
-    };
-    const query = `
-    mutation checkoutCreate($input: CheckoutCreateInput!) {
-      checkoutCreate(input: $input) {
-        checkout {
-          webUrl
-          id
-          currencyCode
-        }
-      }
-    }
-  `;
-    const body = {
-      query: query,
-      variables: input,
-    };
-    try {
-      const response = await handleFetch({ body, country: lpParams.country });
-      const apiData = await response.json();
-      if (!response.ok || apiData.errors) throw new Error(`Api Error. ${JSON.stringify(apiData)}`);
-      const checkoutId = apiData.data.checkoutCreate.checkout.id;
+    const getDiscountCodes = () => {
       const hasBumpIncreaseDiscount = document.querySelector("[bump-increase-qtty-input]");
       let bumpDiscount = (hasBumpIncreaseDiscount && lpParams.bump.discountCode) || (data.find((prod) => prod.id.includes("ob")) && lpParams.bump.discountCode);
       data
@@ -239,12 +164,36 @@ const buy = async ({ data, btnDiscount, lpParams, noCart, btnProducts }) => {
           }
         } else discount = bumpDiscount;
         if (urlDiscount) discount = discount ? discount + `-${urlDiscount}` : urlDiscount;
-        const responseDiscount = await addDiscount(checkoutId, discount, lpParams.country);
-        const discountData = await responseDiscount.json();
-        if (!responseDiscount.ok) throw new Error(`Api Discount Error. ${JSON.stringify(discountData)}`);
+        return discount.split("-");
       }
-
-      startPopsixle(checkoutId.split("?key=")[1]);
+    };
+    const discountCodes = getDiscountCodes();
+    const input = {
+      input: {
+        discountCodes: discountCodes,
+        lines: obj,
+      },
+    };
+    const query = `
+      mutation cartCreate($input: CartInput) {
+        cartCreate(input: $input) {
+          cart {
+            checkoutUrl
+            id
+          }
+        }
+      }
+    `;
+    const body = {
+      query: query,
+      variables: input,
+    };
+    try {
+      const response = await handleFetch({ body, country: lpParams.country });
+      const apiData = await response.json();
+      if (!response.ok || apiData.errors) throw new Error(`Api Error. ${JSON.stringify(apiData)}`);
+      const cartId = apiData.data.cartCreate.cart.id;
+      startPopsixle(cartId.split("?key=")[1]);
       const getClickIds = () => {
         const paramsObject = {};
         const allowedParams = ["gclid", "fbclid", "fbc", "sccid", "ttclid", "twclid"];
@@ -260,33 +209,32 @@ const buy = async ({ data, btnDiscount, lpParams, noCart, btnProducts }) => {
         const string = paramsArray.join(" , ");
         return string;
       };
-      const attributesResponse = await addCustomAttributes(
+      const attributesResponse = await addAttributes(
         [
           {
             key: "unique_checkout_id",
-            value: `${checkoutId.split("?key=")[1]}`,
+            value: `${cartId.split("?key=")[1]}`,
           },
           {
             key: "intellimize_user_id",
-            value: getUserId(),
+            value: getUserId() || "undefined",
           },
           {
             key: "click_ids",
-            value: getClickIds(),
+            value: getClickIds() || "undefined",
           },
           {
             key: "source_url",
             value: window.location.href,
           },
         ],
-        checkoutId,
+        cartId,
         lpParams.country
       );
       const attributesData = await attributesResponse.json();
       if (!attributesResponse.ok) throw new Error(`Attributes Error. ${JSON.stringify(attributesData)}`);
-
       dataLayerRedirect(lpParams.dataLayer, data);
-      window.location.href = `${apiData.data.checkoutCreate.checkout.webUrl}&${urlParams}`;
+      window.location.href = `${apiData.data.cartCreate.cart.checkoutUrl}&${urlParams}`;
       return true;
     } catch (error) {
       trySentry({ error });
