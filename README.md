@@ -181,3 +181,5 @@ You can have optional product along with the noCart option like so:
 ## How to compile scss
 
 ### either install the compiler from the sass website, or install the vscode extension live sass compiler.
+
+.
