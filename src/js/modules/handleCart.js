@@ -450,7 +450,7 @@ const createBumpAddButton = ({ data, container, wrapper, inCartContainer, prod, 
         data.push(prod);
       }
       addButton.classList.add("bump-added");
-      addButton.innerHTML = "Added to card";
+      addButton.innerHTML = "Added to cart";
       inCartContainer.appendChild(wrapper);
       if (newPriceElement && oldPriceElement) {
         addNewPrice(newPriceElement, (newPriceValue + totalPrice).toFixed(2));
