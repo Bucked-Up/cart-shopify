@@ -17,8 +17,8 @@ const sendPageView = async () => {
 const handlePageView = async () => {
   const pageViewKey = "pageViewSent";
   if (!sessionStorage.getItem(pageViewKey)) {
-    await sendPageView();
     sessionStorage.setItem(pageViewKey, "true");
+    sendPageView();
   }
 };
 
