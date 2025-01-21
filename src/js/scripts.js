@@ -7,6 +7,7 @@ import fetchProductBen from "./modules/handleProduct/fetchProductBen.js";
 import handleCookieBanner, { tryFbq } from "./modules/handleCookieBanner.js";
 import { handleError, trySentry } from "./variables.js";
 import handleIntellimize from "./modules/intellimize.js";
+import handlePageView from "./modules/handlePageView.js";
 
 const shopifyApiCode = async (lpParams) => {
   window.addEventListener("pageshow", function (event) {
@@ -25,6 +26,7 @@ const shopifyApiCode = async (lpParams) => {
   else{
     tryFbq("grant");
     handleIntellimize();
+    handlePageView();
   } 
   let data, orderBumpData;
   try {
