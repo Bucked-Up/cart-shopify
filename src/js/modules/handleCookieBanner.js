@@ -1,4 +1,5 @@
 import { getAccessToken } from "../variables.js";
+import handlePageView from "./handlePageView.js";
 import handleIntellimize from "./intellimize.js";
 
 const getCheckoutDomain = (country) => {
@@ -51,6 +52,7 @@ const handleCookieBanner = ({ country }) => {
         tryFbq("grant");
         tryGtag({ consent: "granted", step: "update" })
         handleIntellimize();
+        handlePageView();
       } else {
         tryFbq("revoke");
         tryGtag({ consent: "denied", step: "update" })
