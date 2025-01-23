@@ -409,11 +409,11 @@ const createBumpAddButton = ({ data, container, wrapper, inCartContainer, prod, 
   const isIncrease = typeof prod === "string" && prod === "increase";
   const addButton = document.createElement("button");
   addButton.classList.add("add-button");
-  addButton.innerHTML = `Add to cart for only +$${price}`;
+  addButton.innerHTML = `Add to cart for only +$${price.toFixed(2)}`;
 
   const handleAddButtonText = () => {
     if (addButton.classList.contains("bump-added")) return;
-    addButton.innerHTML = `Add to cart for only +$${price + +wrapper.getAttribute("plus-price")}`;
+    addButton.innerHTML = `Add to cart for only +$${(price + +wrapper.getAttribute("plus-price")).toFixed(2)}`;
   };
   observePlusPrice(wrapper, handleAddButtonText);
 
@@ -425,7 +425,7 @@ const createBumpAddButton = ({ data, container, wrapper, inCartContainer, prod, 
     const oldPriceValue = +oldPriceElement?.innerHTML.replace(/[^0-9.]/g, "") || 0;
     if (addButton.classList.contains("bump-added")) {
       addButton.classList.remove("bump-added");
-      addButton.innerHTML = `Add to cart for only +$${price + +wrapper.getAttribute("plus-price")}`;
+      addButton.innerHTML = `Add to cart for only +$${(price + +wrapper.getAttribute("plus-price")).toFixed(2)}`;
       container.appendChild(wrapper);
       if (isIncrease) {
         document.querySelectorAll("[bump-increase-qtty-input]").forEach((input) => input.remove());

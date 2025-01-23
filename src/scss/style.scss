@@ -18,7 +18,8 @@
   }
 }
 
-.cart, .cart__dropdown {
+.cart,
+.cart__dropdown {
   p,
   label {
     margin: 0;
@@ -110,7 +111,6 @@
   }
   &__title-div {
     position: relative;
-    margin-bottom: 1rem;
     p {
       font-size: 1.25rem;
       font-weight: 700;
@@ -133,6 +133,9 @@
     }
   }
   &__order-bumps-container {
+    gap: 0.5rem;
+    display: flex;
+    flex-direction: column;
     &:not(:has(.cart__product)) {
       display: none;
     }
@@ -215,6 +218,7 @@
         display: flex;
         align-items: center;
         gap: 1rem;
+        margin-top:.5rem;
         @mixin input-width() {
           flex-direction: column;
           gap: 0.5rem;
