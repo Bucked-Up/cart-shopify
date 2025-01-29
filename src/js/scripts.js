@@ -26,7 +26,7 @@ const shopifyApiCode = async (lpParams) => {
   else{
     tryFbq("grant");
     handleIntellimize();
-    handlePageView();
+    // handlePageView();
   } 
   let data, orderBumpData;
   try {

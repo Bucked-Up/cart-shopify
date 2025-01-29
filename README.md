@@ -82,11 +82,9 @@ You can have more than one bump product.
 ```
 bump: {
   products: {
-    999: { title: "Get 30 Servings of Babe Greens & Free Shipping On Your Order!",  price: 9.99 },
-    999: { title: "Get 30 Servings of Babe Collagen & Free Shipping On Your Order!", discountCode: "lorem"}
+    999: {price: 39.99, discountCode: "ipsum", title: "Get 30 Servings of Babe Greens & Free Shipping On Your Order!",  price: 9.99 },
+    999: {price: 39.99, discountCode: "ipsum", title: "Get 30 Servings of Babe Collagen & Free Shipping On Your Order!", discountCode: "lorem"}
   },
-  price: 39.99,
-  discountCode: "ipsum",
 },
 ```
 

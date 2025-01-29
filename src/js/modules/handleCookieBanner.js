@@ -52,7 +52,7 @@ const handleCookieBanner = ({ country }) => {
         tryFbq("grant");
         tryGtag({ consent: "granted", step: "update" })
         handleIntellimize();
-        handlePageView();
+        // handlePageView();
       } else {
         tryFbq("revoke");
         tryGtag({ consent: "denied", step: "update" })
