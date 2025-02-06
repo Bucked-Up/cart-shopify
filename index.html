@@ -36,29 +36,23 @@
     src: `cart-shopify.min.js`,
     type: "module",
     onload: () => shopifyApiCode({
+      isBenSys: {},
       noCart: false,
       country: "us",
       dataLayer: {
         step_count: "",
-        page_id: "",
-        version_id: "",
+        page_id: origin,
+        version_id: origin,
       },
       products: {
-        9729583710514: { title: "First, Choose Your Premium Flag Tee" },
-        9647917564210: { title: "Next, Choose Your Perfect Shaker Bottle" },
-        8685143195954: { title: "BONUS 5 Top Selling Formulas!" },
-      }, bump: {
-        products: {
-          8685142376754: { title: "LIMITED TIME OFFER: 20% OFF 30 Servings of Pre-Workout & FREE SHIPPING On Your Entire Order!" }
-        },
-        price: 39.99,
-        discountCode: "FULLSIZEPRE20-PREFREESHIPPING"
-
+        979: {},
+        924: {},
+        935: {},
       },
       buttons: {
         "btn-1": {},
       },
-      discountCode: "ksfb1-asd",
+      discountCode: "",
     })
   }));
 </script>

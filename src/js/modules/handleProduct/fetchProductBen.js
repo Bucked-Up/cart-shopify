@@ -7,6 +7,8 @@ const checkStock = (prod, mainId, secondId) => {
   );
 };
 
+const removeParenthesesContent = (str) => str.replace(/\([^)]*\)/g, '').trim();
+
 const fetchProductBen = async ({ products, country, isOrderBump }) => {
   if (isOrderBump && "increase" in products) return ["increase"];
   const convertData = (data) => {
@@ -61,11 +63,11 @@ const fetchProductBen = async ({ products, country, isOrderBump }) => {
                 selectedOptions: [
                   {
                     name: prod.options[0].name,
-                    value: value0.name,
+                    value: removeParenthesesContent(value0.name),
                   },
                   {
                     name: prod.options[1].name,
-                    value: value1.name,
+                    value: removeParenthesesContent(value1.name),
                   },
                 ],
                 image: {
