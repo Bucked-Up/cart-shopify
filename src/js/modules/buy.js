@@ -220,6 +220,10 @@ const buy = async ({ data, btnDiscount, lpParams, noCart, btnProducts }) => {
             value: getUserId() || "undefined",
           },
           {
+            key: "affiliate",
+            value: urlParams.get("affiliate") || "undefined",
+          },
+          {
             key: "click_ids",
             value: getClickIds() || "undefined",
           },
