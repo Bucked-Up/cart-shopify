@@ -228,6 +228,26 @@ const buy = async ({ data, btnDiscount, lpParams, noCart, btnProducts }) => {
             value: getClickIds() || "undefined",
           },
           {
+            key: "utm_source",
+            value: urlParams.get("utm_source") || "undefined",
+          },
+          {
+            key: "utm_medium",
+            value: urlParams.get("utm_medium") || "undefined",
+          },
+          {
+            key: "utm_campaign",
+            value: urlParams.get("utm_campaign") || "undefined",
+          },
+          {
+            key: "utm_content",
+            value: urlParams.get("utm_content") || "undefined",
+          },
+          {
+            key: "utm_adid",
+            value: urlParams.get("utm_adid") || "undefined",
+          },
+          {
             key: "source_url",
             value: window.location.href,
           },
