@@ -79,6 +79,7 @@ const trySentry = ({ error, message }) => {
 };
 
 const handleError = () => {
+  document.body.classList.remove("loading");
   alert("We are currently experiencing issues with our Shopify Storefront.")
   // document.body.classList.add("error");
   // setTimeout(() => {
