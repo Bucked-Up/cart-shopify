@@ -1,13 +1,10 @@
 import { getBenProducts, trySentry } from "../../variables.js";
 
 const checkStock = (prod, mainId, secondId) => {
-  return (
-    (prod.stock[`[${mainId},${secondId}]`] !== undefined && prod.stock[`[${mainId},${secondId}]`] > 0) ||
-    (prod.stock[`[${secondId},${mainId}]`] !== undefined && prod.stock[`[${secondId},${mainId}]`] > 0)
-  );
+  return (prod.stock[`[${mainId},${secondId}]`] !== undefined && prod.stock[`[${mainId},${secondId}]`] > 0) || (prod.stock[`[${secondId},${mainId}]`] !== undefined && prod.stock[`[${secondId},${mainId}]`] > 0);
 };
 
-const removeParenthesesContent = (str) => str.replace(/\([^)]*\)/g, '').trim();
+const removeParenthesesContent = (str) => str.replace(/\([^)]*\)/g, "").trim();
 
 const fetchProductBen = async ({ products, country, isOrderBump }) => {
   if (isOrderBump && "increase" in products) return ["increase"];
@@ -20,7 +17,7 @@ const fetchProductBen = async ({ products, country, isOrderBump }) => {
       const currentProd = products[prod.id];
       if (!isNormalProduct) {
         if (Object.values(prod.stock).every((val) => val <= 0)) {
-          trySentry({message: `Out of stock: ${prod.id}`})
+          trySentry({ message: `Out of stock: ${prod.id}` });
           data.noStock = true;
           return;
         }
@@ -44,6 +41,7 @@ const fetchProductBen = async ({ products, country, isOrderBump }) => {
         }
         newProd.title = currentProd.title || prod.name;
         newProd.variants = [];
+        newProd.notAvailableVariants = [];
         newProd.hasQtty = currentProd.hasQtty;
         newProd.isBenSysShirt = true;
         prod.options.forEach((option) => {
@@ -55,37 +53,40 @@ const fetchProductBen = async ({ products, country, isOrderBump }) => {
         });
         prod.options[0].values.forEach((value0) => {
           prod.options[1].values.forEach((value1) => {
-            if (checkStock(prod, value0.id, value1.id))
-              newProd.variants.push({
-                id: `${value0.id}-${value1.id}`,
-                title: `${value0.name} / ${value1.name}`,
-                availableForSale: true,
-                selectedOptions: [
-                  {
-                    name: prod.options[0].name,
-                    value: removeParenthesesContent(value0.name),
-                  },
-                  {
-                    name: prod.options[1].name,
-                    value: removeParenthesesContent(value1.name),
-                  },
-                ],
-                image: {
-                  src: value0.images[0],
+            const availableForSale = checkStock(prod, value0.id, value1.id);
+            const variantObj = {
+              id: `${value0.id}-${value1.id}`,
+              title: `${value0.name} / ${value1.name}`,
+              availableForSale: availableForSale,
+              selectedOptions: [
+                {
+                  name: prod.options[0].name,
+                  value: removeParenthesesContent(value0.name),
                 },
-              });
+                {
+                  name: prod.options[1].name,
+                  value: removeParenthesesContent(value1.name),
+                },
+              ],
+              image: {
+                src: value0.images[0],
+              },
+            };
+            if (availableForSale) newProd.variants.push(variantObj);
+            else newProd.notAvailableVariants.push(variantObj);
           });
         });
         newData.push(newProd);
+        console.log(newProd);
       } else {
         for (let option of prod.options) {
           const newProd = {};
           if (!option.values.length == 0) {
             option.values = option.values.filter((value) => value.in_stock);
             if (option.values.length <= 0) {
-              trySentry({message: `Out of stock: ${prod.id}`})
+              trySentry({ message: `Out of stock: ${prod.id}` });
               newProd.availableForSale = false;
-              newData.push(newProd)
+              newData.push(newProd);
               continue;
             }
           }
@@ -97,17 +98,18 @@ const fetchProductBen = async ({ products, country, isOrderBump }) => {
           }
           newProd.title = currentProd.title || prod.name;
           newProd.variants = [];
+          newProd.notAvailableVariants = [];
           newProd.hasQtty = currentProd.hasQtty;
           if (currentProd.variants) option.values = option.values.filter((value) => currentProd.variants.includes(value.id));
           option.values.forEach((value) => {
-            if (!value.in_stock) return;
             const newVariant = {};
-            newVariant.availableForSale = true;
+            newVariant.availableForSale = value.in_stock;
             newVariant.id = `${value.id}option${option.id}`;
             newVariant.image = { src: value.images[0] };
             newVariant.price = { amount: `${Number(prod.price.slice(1)) - Number(value.price.slice(1))}` };
             newVariant.title = value.name;
-            newProd.variants.push(newVariant);
+            if (newVariant.availableForSale) newProd.variants.push(newVariant);
+            else newProd.notAvailableVariants.push(newVariant);
           });
           if (currentProd.isWhole) {
             newProd.availableForSale = newProd.variants.every(isAvailable);

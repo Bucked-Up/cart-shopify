@@ -36,18 +36,29 @@
     src: `cart-shopify.min.js`,
     type: "module",
     onload: () => shopifyApiCode({
-      isBenSys: {},
       noCart: false,
       country: "us",
       dataLayer: {
         step_count: "",
-        page_id: origin,
-        version_id: origin,
+        page_id: "KS - FB - LP - V1",
+        version_id: "KS - FB - LP - V1",
       },
       products: {
-        979: {},
-        924: {},
-        935: {},
+        9729583710514: { title: "First, Choose Your Premium Flag Tee" },
+        9782006350130: { title: "Next, Choose Your Perfect Shaker Bottle" },
+        8685143195954: { title: "BONUS 5 Top Selling Formulas!" },
+      }, bump: {
+        products: {
+          increase: {
+            quantity: 2,
+            title: "UPGRADE YOUR ORDER: Add 5 More Top Tier Formulas For 60% OFF!",
+            image: "https://cdn.prod.website-files.com/65b28c0eb93277a8f54267b8/66579906d3325a9075b8553a_8047-kickstart-512x512.1679521338.webp",
+            discart: [9729583710514, 9647917564210],
+          }
+        },
+        price: 9.99,
+        discountCode: ""
+
       },
       buttons: {
         "btn-1": {},

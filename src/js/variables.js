@@ -79,12 +79,10 @@ const trySentry = ({ error, message }) => {
 };
 
 const handleError = () => {
-  document.body.classList.remove("loading");
-  alert("We are currently experiencing issues with our Shopify Storefront.")
-  // document.body.classList.add("error");
-  // setTimeout(() => {
-  //   window.location.href = "https://buckedup.com";
-  // }, 3000);
+  document.body.classList.add("error");
+  setTimeout(() => {
+    window.location.href = "https://buckedup.com";
+  }, 3000);
 };
 
 export { handleFetch, getBenProducts, getAccessToken, trySentry, handleError };

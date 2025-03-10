@@ -58,7 +58,7 @@ const handleCartPrice = ({ productWrapper, inCartContainer, prod }) => {
   observePlusPrice(productWrapper, handlePriceObserver);
 };
 
-const createInputRadio = ({ productId, variantId, text, variantPrice = "", plusPrice = false, variantPlusPrice }) => {
+const createInputRadio = ({ productId, variantId, text, variantPrice = "", plusPrice = false, variantPlusPrice, isPlaceholder }) => {
   const wrapper = document.createElement("div");
   const label = document.createElement("label");
   const labelText = document.createElement("span");
@@ -92,6 +92,8 @@ const createInputRadio = ({ productId, variantId, text, variantPrice = "", plusP
     labelText.appendChild(labelPrice);
   }
 
+  if (isPlaceholder) input.setAttribute("disabled", "disabled");
+
   return [wrapper, input];
 };
 
@@ -113,8 +115,7 @@ const createButton = (variant) => {
 const createDropdown = (title) => {
   const dropdown = document.createElement("div");
   const p = document.createElement("p");
-  const svg =
-    '<svg width="20" height="17" viewBox="0 0 20 17" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12.5981 15.5C11.4434 17.5 8.55662 17.5 7.40192 15.5L1.33975 5C0.185047 3 1.62842 0.499998 3.93782 0.499998L16.0622 0.499999C18.3716 0.5 19.815 3 18.6603 5L12.5981 15.5Z" fill="black"/></svg>';
+  const svg = '<svg width="20" height="17" viewBox="0 0 20 17" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12.5981 15.5C11.4434 17.5 8.55662 17.5 7.40192 15.5L1.33975 5C0.185047 3 1.62842 0.499998 3.93782 0.499998L16.0622 0.499999C18.3716 0.5 19.815 3 18.6603 5L12.5981 15.5Z" fill="black"/></svg>';
   dropdown.setAttribute("role", "button");
   dropdown.classList.add("cart__dropdown");
   p.innerHTML = title;
@@ -134,8 +135,9 @@ const createProductBase = ({ prod, img, productWrapper }) => {
   const variantsWrapper = document.createElement("div");
   const dropdown = createDropdown(prod.variants[0].title);
   variantsWrapper.classList.add("cart__dropdown__variants");
-  prod.variants.forEach((variant) => {
+  [...prod.variants, ...prod.notAvailableVariants].forEach((variant) => {
     const [wrapper, button] = createInputRadio({
+      isPlaceholder: !variant.availableForSale,
       productId: prod.id,
       variantId: variant.id,
       text: variant.title,
@@ -172,6 +174,12 @@ const handleOptionalProduct = ({ prod }) => {
 const handleComplexProduct = ({ prod, productInfo, img, productWrapper }) => {
   const primaryOption = prod.options[0];
   const secondaryOption = prod.options[1];
+  primaryOption.notAvailableValues = primaryOption.values.filter((value) => {
+    for (let variant of [...prod.variants, ...prod.notAvailableVariants]) {
+      if (variant.selectedOptions[0].value === value && variant.availableForSale) return false;
+    }
+    return true;
+  });
   primaryOption.values = primaryOption.values.filter((value) => {
     for (let variant of prod.variants) {
       if (variant.selectedOptions[0].value === value && variant.availableForSale) return true;
@@ -282,6 +290,15 @@ const handleComplexProduct = ({ prod, productInfo, img, productWrapper }) => {
     });
     primaryVariantsWrapper.appendChild(wrapper);
   });
+  primaryOption.notAvailableValues.forEach((option) => {
+    const [wrapper, button] = createInputRadio({
+      isPlaceholder: true,
+      productId: primaryOption.id,
+      variantId: option,
+      text: option,
+    });
+    primaryVariantsWrapper.appendChild(wrapper);
+  });
   primaryVariantsWrapper.querySelector("input").checked = true;
   primaryDropdown.appendChild(primaryVariantsWrapper);
 
@@ -302,8 +319,7 @@ const createQtty = ({ inputId, maxQtty, addButton, price }) => {
 
   const plusBtn = document.createElement("button");
   plusBtn.classList.add("btn-plus");
-  plusBtn.innerHTML =
-    '<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24"><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/></svg>';
+  plusBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24"><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/></svg>';
 
   const minusBtn = document.createElement("button");
   minusBtn.classList.add("btn-minus");
@@ -374,30 +390,32 @@ const createPlaceholders = ({ prod, selectionDiv, productWrapper }) => {
   const selectionContainer = document.createElement("div");
   selectionContainer.classList.add("cart__variant-selection__container");
   selectionDiv.appendChild(selectionContainer);
-  prod.variants.forEach((variant) => {
+  [...prod.variants, ...prod.notAvailableVariants].forEach((variant) => {
     const btn = createButton(variant);
     selectionContainer.appendChild(btn);
-    btn.addEventListener("click", () => {
-      const prodContainer = document.querySelector(`[prod-id="${prod.id.split("id")[0]}"] .cart__placeholders`);
-      if (btn.parentElement.classList.contains("cart__variant-selection__container")) {
-        const placeholder = prodContainer.querySelector('.cart__variant-placeholder:not([style*="display: none"])');
-        const firstChild = prodContainer.querySelector("*");
-        const prevPlusPrice = +productWrapper.getAttribute("plus-price");
-        productWrapper.setAttribute("plus-price", prevPlusPrice + +(variant.plusPrice || 0));
-        const clone = btn.cloneNode(true);
-        clone.addEventListener("click", () => {
+    if (!variant.availableForSale) btn.setAttribute("disabled", "disabled");
+    else
+      btn.addEventListener("click", () => {
+        const prodContainer = document.querySelector(`[prod-id="${prod.id.split("id")[0]}"] .cart__placeholders`);
+        if (btn.parentElement.classList.contains("cart__variant-selection__container")) {
+          const placeholder = prodContainer.querySelector('.cart__variant-placeholder:not([style*="display: none"])');
+          const firstChild = prodContainer.querySelector("*");
           const prevPlusPrice = +productWrapper.getAttribute("plus-price");
-          productWrapper.setAttribute("plus-price", prevPlusPrice - +(variant.plusPrice || 0));
-          prodContainer.querySelector('.cart__variant-placeholder[style*="display: none"]').style.display = "";
-          selectionDiv.style.display = "";
-          clone.remove();
-        });
-        prodContainer.insertBefore(clone, firstChild);
-        placeholder.style.display = "none";
-        selectionContainer.classList.remove("shake");
-        if (!prodContainer.querySelector('.cart__variant-placeholder:not([style*="display: none"])')) selectionDiv.style.display = "none";
-      }
-    });
+          productWrapper.setAttribute("plus-price", prevPlusPrice + +(variant.plusPrice || 0));
+          const clone = btn.cloneNode(true);
+          clone.addEventListener("click", () => {
+            const prevPlusPrice = +productWrapper.getAttribute("plus-price");
+            productWrapper.setAttribute("plus-price", prevPlusPrice - +(variant.plusPrice || 0));
+            prodContainer.querySelector('.cart__variant-placeholder[style*="display: none"]').style.display = "";
+            selectionDiv.style.display = "";
+            clone.remove();
+          });
+          prodContainer.insertBefore(clone, firstChild);
+          placeholder.style.display = "none";
+          selectionContainer.classList.remove("shake");
+          if (!prodContainer.querySelector('.cart__variant-placeholder:not([style*="display: none"])')) selectionDiv.style.display = "none";
+        }
+      });
   });
   return selectionDiv;
 };
@@ -597,8 +615,7 @@ const createCart = (data, orderBumpData, lpParams) => {
   closeCartButton.classList.add("cart__head__close-button");
   cartIcon.innerHTML = `
   <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24"><path d="M280-80q-33 0-56.5-23.5T200-160q0-33 23.5-56.5T280-240q33 0 56.5 23.5T360-160q0 33-23.5 56.5T280-80Zm400 0q-33 0-56.5-23.5T600-160q0-33 23.5-56.5T680-240q33 0 56.5 23.5T760-160q0 33-23.5 56.5T680-80ZM208-800h590q23 0 35 20.5t1 41.5L692-482q-11 20-29.5 31T622-440H324l-44 80h480v80H280q-45 0-68-39.5t-2-78.5l54-98-144-304H40v-80h130l38 80Z"/></svg>`;
-  closeCartButton.innerHTML =
-    '<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg>';
+  closeCartButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg>';
 
   if (!domCartContainer) {
     cartHead.appendChild(cartIcon);
@@ -703,9 +720,7 @@ const createCart = (data, orderBumpData, lpParams) => {
           if (variantsOptions && variant.id.includes("ProductVariant/")) variantQuantity = variantsOptions[variant.id.split("ProductVariant/")[1]]?.quantity;
           else if (variantsOptions && variant.id.includes("option")) variantQuantity = variantsOptions[variant.id.split("option")[0]]?.quantity;
           else if (variantsOptions) variantQuantity = variantsOptions[variant.id]?.quantity;
-          inCartContainer.appendChild(
-            createProduct({ prod: variant, lpParams, isVariant: { title: prod.title, id: variant.id }, quantity: variantQuantity || quantity, data })
-          );
+          inCartContainer.appendChild(createProduct({ prod: variant, lpParams, isVariant: { title: prod.title, id: variant.id }, quantity: variantQuantity || quantity, data }));
         });
       } else {
         const prodCard = createProduct({ prod, quantity, lpParams, data, inCartContainer });

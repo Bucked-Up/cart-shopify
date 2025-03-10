@@ -359,6 +359,16 @@
             }
           }
         }
+        &:has(input[disabled]){
+          color: #616161;
+          text-decoration: line-through;
+          label{
+            cursor: not-allowed;
+          }
+          .label-ball{
+            border-color: #616161;
+          }
+        }
         &:not(:last-child) label {
           padding-bottom: 0.6rem;
           @media (max-width: 768px) {
@@ -410,6 +420,14 @@
       font-weight: 700;
       font-size: 1rem;
       margin-bottom: 0.5rem;
+    }
+    button[disabled]{
+      color: black;
+      opacity: 0.5;
+      cursor: not-allowed;
+      &:hover{
+        border: .0625rem solid #c2c4c7
+      }
     }
   }
   &__placeholders {

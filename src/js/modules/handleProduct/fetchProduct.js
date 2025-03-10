@@ -27,13 +27,13 @@ const filterVariants = (data, products, isOrderBump) => {
       prod.title = currentProduct.title;
     }
     if (Object.keys(products).length > 0) {
+      prod.notAvailableVariants = prod.variants.edges.filter((edge) => !edge.node.availableForSale).map((obj) => obj.node);
       prod.variants = prod.variants.edges.filter((edge) => edge.node.availableForSale);
       if (currentProduct.title) prod.title = currentProduct.title;
       if (currentProduct.isOptional) prod.isOptional = currentProduct.isOptional;
       if (currentProduct.hasQtty) prod.hasQtty = hasQtty;
       if (currentProduct.noPriceUp) prod.noPriceUp = true;
-      if (currentProduct.variants)
-        prod.variants = prod.variants.filter((filteredVariant) => currentProduct.variants.includes(+filteredVariant.node.id.split("ProductVariant/")[1]));
+      if (currentProduct.variants) prod.variants = prod.variants.filter((filteredVariant) => currentProduct.variants.includes(+filteredVariant.node.id.split("ProductVariant/")[1]));
       if (currentProduct.variantOf) {
         const mainProd = data.find((prod) => prod.id.includes(currentProduct.variantOf));
         prod.variants.forEach((variant) => {
@@ -106,7 +106,7 @@ const fetchProduct = async ({ products, isOrderBump = false, country }) => {
       }
       prod.id = prod.id.split("/").slice(-1)[0];
 
-      let minPrice = 99999;
+      let minPrice = Infinity;
       for (let key in prod.variants) {
         prod.variants[key] = prod.variants[key].node;
         prod.variants[key].title = prod.variants[key].title.split("(")[0];
