@@ -77,7 +77,6 @@ const fetchProductBen = async ({ products, country, isOrderBump }) => {
           });
         });
         newData.push(newProd);
-        console.log(newProd);
       } else {
         for (let option of prod.options) {
           const newProd = {};

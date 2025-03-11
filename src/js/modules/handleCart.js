@@ -135,13 +135,20 @@ const createProductBase = ({ prod, img, productWrapper }) => {
   const variantsWrapper = document.createElement("div");
   const dropdown = createDropdown(prod.variants[0].title);
   variantsWrapper.classList.add("cart__dropdown__variants");
+  prod.placeholderVariants?.forEach(placeHolder=>{
+    prod.notAvailableVariants.push({
+      id: "placeholder",
+      title: placeHolder.title,
+      availableForSale: false,
+    })
+  });
   [...prod.variants, ...prod.notAvailableVariants].forEach((variant) => {
     const [wrapper, button] = createInputRadio({
       isPlaceholder: !variant.availableForSale,
       productId: prod.id,
       variantId: variant.id,
       text: variant.title,
-      variantPrice: variant.price.amount,
+      variantPrice: variant.price?.amount,
       variantPlusPrice: variant.plusPrice,
     });
     variantsWrapper.appendChild(wrapper);
@@ -390,6 +397,14 @@ const createPlaceholders = ({ prod, selectionDiv, productWrapper }) => {
   const selectionContainer = document.createElement("div");
   selectionContainer.classList.add("cart__variant-selection__container");
   selectionDiv.appendChild(selectionContainer);
+  prod.placeholderVariants?.forEach(placeHolder=>{
+    prod.notAvailableVariants.push({
+      id: "placeholder",
+      title: placeHolder.title,
+      availableForSale: false,
+      image: {src: placeHolder.image},
+    })
+  });
   [...prod.variants, ...prod.notAvailableVariants].forEach((variant) => {
     const btn = createButton(variant);
     selectionContainer.appendChild(btn);

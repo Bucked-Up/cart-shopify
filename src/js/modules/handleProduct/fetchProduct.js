@@ -33,6 +33,7 @@ const filterVariants = (data, products, isOrderBump) => {
       if (currentProduct.isOptional) prod.isOptional = currentProduct.isOptional;
       if (currentProduct.hasQtty) prod.hasQtty = hasQtty;
       if (currentProduct.noPriceUp) prod.noPriceUp = true;
+      if (currentProduct.placeholderVariants) prod.placeholderVariants = currentProduct.placeholderVariants;
       if (currentProduct.variants) prod.variants = prod.variants.filter((filteredVariant) => currentProduct.variants.includes(+filteredVariant.node.id.split("ProductVariant/")[1]));
       if (currentProduct.variantOf) {
         const mainProd = data.find((prod) => prod.id.includes(currentProduct.variantOf));
