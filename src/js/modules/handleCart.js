@@ -232,7 +232,7 @@ const handleComplexProduct = ({ prod, productInfo, img, productWrapper }) => {
     }
   };
 
-  const placeHolders = ["S", "M", "L", "XL", "2XL", "3XL", "4XL"].map((size) => {
+  const placeHolders = ["S", "M", "L", "XL", "2XL", "3XL"].map((size) => {
     const wrapper = document.createElement("div");
     const textWrapper = document.createElement("div");
     const text = document.createElement("span");
