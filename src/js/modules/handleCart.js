@@ -513,6 +513,7 @@ const createProduct = ({ prod, isVariant, isOrderBump, orderBumpsContainer, inCa
   }
 
   productWrapper.classList.add("cart__product");
+  if(prod.isHidden) productWrapper.classList.add("is-hidden-product");
   if (prod !== "increase") productWrapper.setAttribute("prod-id", isVariant ? isVariant.id : prod.id.split("id")[0]);
 
   handleCartPrice({ productWrapper, inCartContainer, prod });

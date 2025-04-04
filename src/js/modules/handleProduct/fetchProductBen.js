@@ -96,6 +96,7 @@ const fetchProductBen = async ({ products, country, isOrderBump }) => {
             newProd.id = newProd.id + "ob";
           }
           newProd.title = currentProd.title || prod.name;
+          if (currentProd.isHidden) newProd.isHidden = currentProd.isHidden;
           newProd.variants = [];
           newProd.notAvailableVariants = [];
           newProd.hasQtty = currentProd.hasQtty;

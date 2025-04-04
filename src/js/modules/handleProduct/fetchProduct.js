@@ -31,6 +31,7 @@ const filterVariants = (data, products, isOrderBump) => {
       prod.variants = prod.variants.edges.filter((edge) => edge.node.availableForSale);
       if (currentProduct.title) prod.title = currentProduct.title;
       if (currentProduct.isOptional) prod.isOptional = currentProduct.isOptional;
+      if (currentProduct.isHidden) prod.isHidden = currentProduct.isHidden;
       if (currentProduct.hasQtty) prod.hasQtty = hasQtty;
       if (currentProduct.noPriceUp) prod.noPriceUp = true;
       if (currentProduct.placeholderVariants) prod.placeholderVariants = currentProduct.placeholderVariants;

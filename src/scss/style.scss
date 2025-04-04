@@ -162,6 +162,9 @@
     &:last-child {
       margin-bottom: 1rem;
     }
+    &.is-hidden-product{
+      display: none;
+    }
     &__container {
       display: flex;
       align-items: flex-start;

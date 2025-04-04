@@ -92,6 +92,7 @@ product can have the following boolean properties:
 
 - oneCard
 - isWhole
+- isHidden
 
 If it has both, it will need image and title as well.
 
