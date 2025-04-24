@@ -34,6 +34,14 @@ const setKlaviyo = (name, item, titles, lpDataLayer) => {
   }
 };
 
+const setVibeLead = () =>{
+  try{
+    vbpx('event', 'lead');
+  }catch (err) {
+    console.warn("failed vibe\n", err);
+  }
+}
+
 const dataLayerStart = (lpDataLayer, data, discountCode) => {
   const titles = data.map((items) => items.title);
   const item = { lpDataLayer, event: "pageview", action: "load", value: 0 };
@@ -52,6 +60,7 @@ const dataLayerRedirect = (lpDataLayer, data) => {
   const titles = data.map((items) => items.title);
   const item = { lpDataLayer, event: "offerview", action: "viewaction", value: 0 };
   setDataLayer(item);
+  setVibeLead();
   setKlaviyo("User Redirect Engagement", item, titles, lpDataLayer);
 };
 
