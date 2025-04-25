@@ -13,7 +13,7 @@ const fetchProductBen = async ({ products, country, isOrderBump }) => {
     const isAvailable = (variant) => variant.availableForSale === true;
     const newData = [];
     for (let prod of data) {
-      const isNormalProduct = Object.hasOwn(prod.options[0].values[0], "in_stock");
+      const isNormalProduct = !prod.options[0] || !prod.options[0].values[0] || Object.hasOwn(prod.options[0].values[0], "in_stock");
       const currentProd = products[prod.id];
       if (!isNormalProduct) {
         if (Object.values(prod.stock).every((val) => val <= 0)) {
@@ -89,8 +89,9 @@ const fetchProductBen = async ({ products, country, isOrderBump }) => {
               continue;
             }
           }
+          newProd.image = prod.image
           newProd.availableForSale = true;
-          newProd.options = [];
+          newProd.options = prod.options;
           newProd.id = `${prod.id}`;
           if (isOrderBump) {
             newProd.id = newProd.id + "ob";

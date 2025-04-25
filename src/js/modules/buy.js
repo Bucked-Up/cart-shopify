@@ -119,7 +119,7 @@ const buy = async ({ data, btnDiscount, lpParams, noCart, btnProducts }) => {
           return false;
         }
         variantId.push({ id: selectedVariant.result, quantity, prod: product });
-      } else variantId.push({ id: product.variants[0].id, quantity: noCart ? product.quantity : quantity, prod: product });
+      } else variantId.push({ id: product.variants[0]?.id, quantity: noCart ? product.quantity : quantity, prod: product });
     }
   }
 
@@ -136,8 +136,7 @@ const buy = async ({ data, btnDiscount, lpParams, noCart, btnProducts }) => {
       if (variant.prod.isBenSysShirt) {
         string = string + `&products[${i}][id]=${variant.prod.id.split("id")[0].split("ob")[0]}&products[${i}][quantity]=${variant.quantity}&products[${i}][options][${variant.prod.options[0].id}]=${variant.id.split("-")[0]}&products[${i}][id]=${variant.prod.id.split("id")[0].split("ob")[0]}&products[${i}][quantity]=${variant.quantity}&products[${i}][options][${variant.prod.options[1].id}]=${variant.id.split("-")[1]}`;
       } else {
-        const [variantId, optionID] = variant.id.split("option");
-        string = string + `&products[${i}][id]=${variant.prod.id.split("id")[0].split("ob")[0]}&products[${i}][quantity]=${variant.quantity}&products[${i}][options][${optionID}]=${variantId}`;
+        string = string + `&products[${i}][id]=${variant.prod.id.split("id")[0].split("ob")[0]}&products[${i}][quantity]=${variant.quantity}`;
       }
     });
     dataLayerRedirect(lpParams.dataLayer, data);

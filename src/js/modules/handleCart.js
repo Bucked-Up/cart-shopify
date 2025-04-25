@@ -559,8 +559,8 @@ const createProduct = ({ prod, isVariant, isOrderBump, orderBumpsContainer, inCa
       img.alt = prod.title;
     } else {
       if (prod !== "increase") {
-        img.src = prod.variants[0].image.src;
-        img.alt = prod.variants[0].title;
+        img.src = prod.variants[0]?.image.src || prod.image;
+        img.alt = prod.variants[0]?.title || prod.title;
       } else {
         img.src = lpParams.bump.products[prod].image;
       }
