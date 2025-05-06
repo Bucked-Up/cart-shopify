@@ -224,6 +224,10 @@ const buy = async ({ data, btnDiscount, lpParams, noCart, btnProducts }) => {
             value: urlParams.get("affiliate") || "undefined",
           },
           {
+            key: "subid",
+            value: urlParams.get("subid") || "undefined",
+          },
+          {
             key: "click_ids",
             value: getClickIds() || "undefined",
           },
