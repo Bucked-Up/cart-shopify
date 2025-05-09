@@ -576,7 +576,7 @@ const createProduct = ({ prod, isVariant, isOrderBump, orderBumpsContainer, inCa
   }
 
   productContainer.appendChild(productInfo);
-  if (prod !== "increase" && !isVariant && prod.variants.length > 1 && !prod.isWhole) {
+  if (prod !== "increase" && !isVariant && (prod.variants.length > 1 || prod.notAvailableVariants.length > 1) && !prod.isWhole) {
     if (prod.options.length > 1) handleComplexProduct({ prod, productInfo, img, productWrapper });
     else if (!prod.oneCard) handleSimpleProduct({ prod, productInfo, img, productWrapper });
     else handleOneCardProduct({ prod, productInfo, productWrapper });
