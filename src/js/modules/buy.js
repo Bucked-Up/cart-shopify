@@ -196,7 +196,7 @@ const buy = async ({ data, btnDiscount, lpParams, noCart, btnProducts }) => {
       startPopsixle(cartId.split("?key=")[1]);
       const getClickIds = () => {
         const paramsObject = {};
-        const allowedParams = ["gclid", "fbclid", "fbc", "ScCid", "epik", "ttclid", "twclid"];
+        const allowedParams = ["gclid", "gbraid", "fbclid", "fbc", "ScCid", "epik", "ttclid", "twclid"];
         for (let [key, value] of urlParams) {
           if (allowedParams.includes(key)) {
             if (!paramsObject[key]) {
