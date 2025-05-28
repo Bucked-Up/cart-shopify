@@ -89,7 +89,7 @@ const fetchProductBen = async ({ products, country, isOrderBump }) => {
               continue;
             }
           }
-          newProd.image = prod.image
+          newProd.image = prod.image;
           newProd.availableForSale = true;
           newProd.options = prod.options;
           newProd.id = `${prod.id}`;
@@ -125,6 +125,7 @@ const fetchProductBen = async ({ products, country, isOrderBump }) => {
   };
   const ids = Object.keys(products);
   const data = await getBenProducts({ ids: ids, country: country });
+  if (!isOrderBump) window.viewedProducts = data.map((prod) => ({ product_id: prod.id, name: prod.name }));
   return convertData(data);
 };
 
