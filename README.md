@@ -108,6 +108,7 @@ SHOPIFY You can add a noPriceUp property to a product.
 
 SHOPIFY You can add placeholder variants
 
+
 ```
 999: {
   title: "Next, Choose Your Perfect Shaker Bottle",
