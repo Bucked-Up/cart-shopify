@@ -124,7 +124,14 @@ const fetchProductBen = async ({ products, country, isOrderBump }) => {
   };
   const ids = Object.keys(products);
   const data = await getBenProducts({ ids: ids, country: country });
-  if (!isOrderBump) window.viewedProducts = data.map((prod) => ({ product_id: prod.id, name: prod.name }));
+  if (!isOrderBump) {
+      const products = data.map((prod) => ({ product_id: prod.id, name: prod.name }));
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({
+        event: "Viewed Products",
+        products,
+      });
+    }
   return convertData(data);
 };
 

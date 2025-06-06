@@ -97,7 +97,14 @@ const fetchProduct = async ({ products, isOrderBump = false, country }) => {
     const response = await handleFetch({ body: { query }, country });
     let data = await response.json();
     if (!response.ok) throw new Error(`Error Fetching Api. ${JSON.stringify(data)}`);
-    if (!isOrderBump) window.viewedProducts = data.data.nodes.map((prod) => ({ product_id: prod.id.split("Product/")[1], name: prod.title }));
+    if (!isOrderBump) {
+      const products = data.data.nodes.map((prod) => ({ product_id: prod.id.split("Product/")[1], name: prod.title }));
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({
+        event: "Viewed Products",
+        products,
+      });
+    }
     if (data.data.nodes.some((prod) => prod === null)) throw new Error(`Missing Product. ${JSON.stringify(data)}`);
     data = data.data.nodes;
     filterVariants(data, products, isOrderBump);
