@@ -80,6 +80,7 @@ const fetchProduct = async ({ products, isOrderBump = false, country }) => {
               }
               price{
                 amount
+                currencyCode
               }
               image {
                 ... on Image {
@@ -98,7 +99,7 @@ const fetchProduct = async ({ products, isOrderBump = false, country }) => {
     let data = await response.json();
     if (!response.ok) throw new Error(`Error Fetching Api. ${JSON.stringify(data)}`);
     if (!isOrderBump) {
-      const products = data.data.nodes.map((prod) => ({ product_id: prod.id.split("Product/")[1], name: prod.title }));
+      const products = data.data.nodes.map((prod) => ({ product_id: prod.id.split("Product/")[1], name: prod.title, price: prod.variants.edges[0].node.price.amount, currency: prod.variants.edges[0].node.price.currencyCode}));
       window.dataLayer = window.dataLayer || [];
       window.dataLayer.push({
         event: "Viewed Products",

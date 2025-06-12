@@ -125,7 +125,7 @@ const fetchProductBen = async ({ products, country, isOrderBump }) => {
   const ids = Object.keys(products);
   const data = await getBenProducts({ ids: ids, country: country });
   if (!isOrderBump) {
-      const products = data.map((prod) => ({ product_id: prod.id, name: prod.name }));
+      const products = data.map((prod) => ({ product_id: prod.id, name: prod.name, price: prod.price.split("$")[1], currency: prod.price.split("$")[0].trim() || "USD"}));
       window.dataLayer = window.dataLayer || [];
       window.dataLayer.push({
         event: "Viewed Products",
